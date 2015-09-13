@@ -41,12 +41,12 @@ loadClient = ffi "function(cfg, auth){\
 \window.setTimeout(auth, 1);}"
 
 auth :: Config -> (OAuth2Token -> IO ()) -> Bool -> IO ()
-auth = ffi "function(cfg, authHandler, immediate)\
+auth = ffi "function(cfg, ah, im)\
 \{gapi.auth.authorize({\
  \'client_id': cfg.clientID, \
  \'scope': cfg.scopes, \
- \'immediate': immediate)}, \
-\authHandler); \
+ \'immediate': im)}, \
+\ah); \
 \}"
 
 loadGapi :: Config -> (OAuth2Token -> IO ()) -> Bool -> IO ()
