@@ -13,6 +13,24 @@ execution of the script, not on load. For Haste-GAPI to work, it needs to
 be compiled with the --onexec flag, as `haste --onexec CoolSite.hs`.
 
 ```haskell
+data Config = Config {clientID  :: String,
+                      apiKey    :: String,
+                      scopes    :: String,
+                      immediate :: Bool}
+
+data OAuth2Token = OA2Success { accessToken :: String,
+                                expiresIn   :: String,
+                                state       :: String}
+                 | OA2Error { errorMsg :: String,
+                              state    :: String}
+loadGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
+```
+
+To make a successfull authentication, we apply the configuration and
+a continuation to the `loadGapi` function. The contiuation will recieve
+a `OAuth2Token` in which it can see if the authorization was successful.
+
+```haskell
 import Haste.GAPI
 
 main = loadGAPI cfg $ \token -> case token of
