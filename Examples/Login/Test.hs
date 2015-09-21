@@ -9,7 +9,7 @@ cfg = Config {
   scopes = "https://www.googleapis.com/auth/plus.login",
   immediate = False}
 
-main = loadGAPI cfg $ \token -> do
+main = loadGAPI' "loadgapi" cfg $ \token -> do
   elem <- do
     e <- newElem "p"
     case token of
