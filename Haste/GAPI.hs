@@ -11,6 +11,9 @@ module Haste.GAPI (Config(..),
                    withLibrary
                   ) where 
 
+import Haste.GAPI.Request
+import Haste.GAPI.Promise
+
 import Haste.Foreign
 import qualified Haste.JSString as J
 import Data.Default
@@ -19,16 +22,9 @@ import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
 -- | Represents a GAPILibrary with a name and a version
-type Response = JSAny
-type Reason = JSAny 
-data Promise = Promise (Response -> IO ()) (Reason -> IO ())
-
-instance ToAny Promise where
-  toAny (Promise thn err) = toObject [("then", toAny thn), ("error", toAny err)]
-              
 data Library = Lib String String
 
--- | Common Google API config
+-- | Google API config
 data Config = Config {clientID  :: String,
                       apiKey    :: String,
                       scopes    :: String,
@@ -40,7 +36,7 @@ instance ToAny Config where
                         ("scopes",    toAny $ scopes cfg),
                         ("immediate", toAny $ immediate cfg)]
 
--- | OAuth2Token - how did your authentication fare?
+-- | OAuth2 Token
 data OAuth2Token = OA2Success { accessToken :: String,
                                 expiresIn   :: String,
                                 state       :: String}
@@ -49,11 +45,12 @@ data OAuth2Token = OA2Success { accessToken :: String,
 
 instance Show OAuth2Token where
   show t = if oa2success t
-           then "Success Token '" ++ (shorten . accessToken) t
+           then "Success Token '" ++ (shorten $ accessToken t)
                 ++ "' (expires in "++ expiresIn t ++"s)"
            else "Failure Token: " ++ errorMsg t
-    where shorten str | length str < 16 = str
-                      | otherwise = take 32 str ++ "..."
+    where shorten :: String -> String
+          shorten str | length str < 16 = str
+                      | otherwise       = take 32 str ++ "..."
 
 
 instance FromAny OAuth2Token where
@@ -65,37 +62,7 @@ instance FromAny OAuth2Token where
            <*> get oa2 "state"
       else OA2Error <$> get oa2 "error"
            <*> get oa2 "state"
-
--- TODO: Introduce promises on batch level
-data Batch = Reqs [Request]
-
-data Request = Request {
-  -- | URL to handle request
-  path   :: String, 
-  -- | HTTP request method. GET is default.
-  method :: String,
-  -- | Params given to the request
-  params :: [(String, JSAny)],
-  -- | Additional HTTP request headers
-  headers :: String,
-  -- | HTTP request body
-  body :: String,
-  -- | Perhaps a promise?
-  promise :: Promise                         
-                       }
-
-instance ToAny Batch where
-  toAny (Reqs bs) = toAny bs
-
--- | TODO: Apply promises on use
-instance ToAny Request where
-  toAny r = toObject [("path", toAny $ path r),
-                      ("method", toAny $ method r),
-                      ("params", toAny $ params r),
-                      ("headers", toAny $ headers r),
-                      ("body", toAny $ headers r)]
-instance Default Request where
-  
+ 
 -- Exported functions --------------------------------------------------------
 -- | Returns true if the token represents a successful authentication
 oa2success :: OAuth2Token -> Bool
@@ -123,17 +90,6 @@ withLibrary (Lib name version) f = loadLibCallback name version f
 loadLibrary :: Library -> Promise -> IO ()
 loadLibrary (Lib name version) promise = loadLibPromise name version promise
 
--- | Creates a raw JS request
-rawRequest :: String -> [(String, JSAny)] -> Promise -> Request
-rawRequest p kv prom = Request {path = p,
-                                method = "",
-                                params = kv,
-                                headers = "",
-                                body = "",
-                                promise = prom }
--- | order matter, so some batching will be complex
-batch :: Batch -> Batch -> Batch
-batch (Reqs as) (Reqs bs) = Reqs $ as ++ bs
   
 -- FFI Functions and other backendy stuff ------------------------------------
 -- | Loads a library and then issues a callback

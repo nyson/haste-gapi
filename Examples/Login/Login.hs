@@ -33,3 +33,4 @@ main = loadGAPI' "loadgapi" Auth.config $ \token -> do
 
   -- Loading the Google Plus API library with version 'v1'
   withLibrary (Lib "plus" "v1") $ domPut "Loaded G+ Library!"
+  
