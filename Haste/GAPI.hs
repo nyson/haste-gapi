@@ -3,12 +3,17 @@ module Haste.GAPI (Config(..),
                    OAuth2Token(..),
                    Library(..),
                    Promise(..),
+                   Reason,
+                   Response,
                    loadGAPI,
                    loadGAPI',
                    oa2success,
                    getToken,
                    loadLibrary,
-                   withLibrary
+                   withLibrary,
+                   gapiError,
+                   
+                   
                   ) where 
 
 import Haste.GAPI.Request
