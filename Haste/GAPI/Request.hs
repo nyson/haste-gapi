@@ -7,6 +7,9 @@ import Haste.Concurrent
 
 import Control.Applicative
 import Control.Monad
+import Data.Default
+
+import qualified Haste.JSString as JS
 
 -- | Monad which is responsible for GAPI request handling
 --   modelled after this paper (ICFP '14):
@@ -42,26 +45,43 @@ instance Applicative Batch where
 --   takeMVar v >>= fb
 
 
+data Params = Params [(String, String)]
+            deriving Show
+
+
+instance ToAny Params where
+  toAny (Params ps) = let objField (k,v) = (JS.pack k, toAny $ JS.pack v)
+                      in toObject $ map objField ps 
+
 data Request = Request { path    :: String,
                          method  :: String,
-                         params  :: [(String, JSAny)],
+                         params  :: Params,
                          headers :: String,
                          body    :: String}
 
+instance Show Request where
+  show (Request p m pms hs body)
+    = let showDict = ((++) "\n\t" . (\(a,b) -> a ++ ": " ++ b))
+      in "Request: " ++ concatMap showDict [("Path", p), ("Method", m),
+                                            ("Params", show pms)]
+instance Default Request where
+  def = rawRequest "" []
+
+
 -- | Creates a raw JS request
-rawRequest :: String -> [(String, JSAny)] -> Request
+rawRequest :: String -> [(String, String)] -> Request
 rawRequest p kv = Request { path = p,
                             method = "GET",
-                            params = kv,
+                            params = Params kv,
                             headers = "",
                             body = "" }
 
-jsCreateRequest :: String -> [(String, JSAny)] -> IO JSAny
-jsCreateRequest = ffi "function(p, p) {\
-\return gapi.client.request({'path': p, 'params': ps})}"
+jsCreateRequest :: String -> JSAny -> IO JSAny
+jsCreateRequest = ffi "function(p, ps) {\
+\return gapi.client.request({'path': p, 'params': ps})\
+\}"
 
 request :: Request -> Promise -> IO ()
-request r p = do
-  raw <- jsCreateRequest (path r) (params r)
-  applyPromise raw p
+request r p = do re <- jsCreateRequest (path r) (toAny $ params r)
+                 applyPromise re p
   

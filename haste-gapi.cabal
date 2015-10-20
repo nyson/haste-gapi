@@ -25,7 +25,7 @@ cabal-version:       >=1.10
 
 library
   -- Modules exported by the library.
-  exposed-modules:     Haste.GAPI
+  exposed-modules:     Haste.GAPI, Haste.GAPI.Request, Haste.GAPI.Promise
   
   -- Modules included in this library but not exported.
   -- other-modules:       

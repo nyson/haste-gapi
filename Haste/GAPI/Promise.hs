@@ -12,5 +12,6 @@ instance ToAny Promise where
                                       ("error", toAny err)]
 
 applyPromise :: JSAny -> Promise -> IO ()
-applyPromise = ffi "function(action, promise) \
-\{action.then(promise.then, promise.error)"
+applyPromise = ffi "(function(action, p) {\
+\action.then(p.then, p.error);\
+\})"

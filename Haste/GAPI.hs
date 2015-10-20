@@ -29,6 +29,9 @@ data Config = Config {clientID  :: String,
                       apiKey    :: String,
                       scopes    :: String,
                       immediate :: Bool}
+instance Show Config where
+  show (Config cid key scopes imm)
+    = "\nConfig: " ++ concatMap (++ "\n\t") [cid, key, scopes, show imm]
 
 instance ToAny Config where
   toAny cfg = toObject [("clientID",  toAny $ clientID cfg),
