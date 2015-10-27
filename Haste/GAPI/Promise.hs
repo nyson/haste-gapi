@@ -36,9 +36,9 @@ gapiError action reason
 
 -- | Looking up a successor of an object by a deep id.
 -- Say you have a JavaScript object: 
--- @
---   obj = {child: {childer: {childerest: "Hello sir!"}}};
--- @
+--
+-- >>> obj = {child: {childer: {childerest: "Hello sir!"}}};
+--
 -- To lookup childerest:
 -- >>> lookup obj "child.childer.childerest"
 lookupAny :: JSAny -> JSString -> IO (Maybe JSAny)

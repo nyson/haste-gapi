@@ -35,12 +35,12 @@ application = concurrent $ do
     ++ "' with no parameters..."
 
   -- Perform request with a promise. See 'myPromise' below for implementation.
-  liftIO $ request goodRequest myPromise
+  liftIO $ withRequest goodRequest myPromise
   
   {- We wait for a while to make it more probable requests are performed
       somewhat sequentially -}
   wait 2500 
-
+  liftIO . domPut $ ""
     -- A bad request
   let badRequest = def {path = "plus/v1/people/meesa"}
   liftIO . domPut $ "Now we let Jar Jar Binks (OH NO!) choose the API path, "
@@ -48,7 +48,7 @@ application = concurrent $ do
   liftIO . domPut $ "Using request with path '" ++ path badRequest
     ++ "' with no parameters..."
 
-  liftIO $ request badRequest myPromise   
+  liftIO $ withRequest badRequest myPromise   
   
   
 -- | This is an example of a promise - a promise is a basic datatype of
@@ -66,20 +66,20 @@ application = concurrent $ do
 --  function, or you may preferrably write one of your own
 myPromise :: Promise
 myPromise = Promise success err
-  where err :: Reason -> IO ()
-        err reason = do
-          gapiError (domPut . ("Erroneous request: " ++)
-                     . (++ " - See details in your debugger")
-                     . J.unpack) reason
-          printAny reason
-
-        success :: Response -> IO ()
+  where success :: Response -> IO ()
         success response = do
           domPut $ "Success! The request was carried out splendidly! "
             ++ " - See details in your debugger<br />"
           putStrLn "Good Request"
           printAny response
-                
+          
+        err :: Reason -> IO ()
+        err reason = do
+          gapiError (domPut . ("Erroneous request: " ++)
+                     . (++ " - See details in your debugger")
+                     . J.unpack) reason
+          printAny reason
+        
 
 -- Some functions to ease debug prints ---------------------------------------
 
