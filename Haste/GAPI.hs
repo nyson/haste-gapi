@@ -5,8 +5,7 @@ module Haste.GAPI (Config(..),
                    Promise(..),
                    Reason,
                    Response,
-                   loadGAPI,
-                   loadGAPI',
+                   withGAPI,
                    oa2success,
                    getToken,
                    loadLibrary,
@@ -77,6 +76,11 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
+withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
+withGAPI cfg handler = do
+  loadGAPI' "GAPILoader" cfg handler
+  loadGAPIExternals "GAPILoader"
+
 -- | Exports and coordinate loading of the Google API.
 loadGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 loadGAPI = loadGAPI' "GAPILoader"
@@ -128,5 +132,10 @@ auth = ffi "function(cfg, ah)\
 exportLoaderSymbol :: String -> IO () -> IO ()
 exportLoaderSymbol = ffi "function(s, f) {window[s] = f;}"
 
-
-
+-- | Loads the external GAPI scripts
+loadGAPIExternals :: String -> IO ()
+loadGAPIExternals = ffi "function(sym) {\
+\var s = document.createElement('script');\
+\s.setAttribute('src', 'https://apis.google.com/js/client.js?onload=' + sym);\
+\s.setAttribute('type', 'text/javascript');\
+\document.head.appendChild(s);}"

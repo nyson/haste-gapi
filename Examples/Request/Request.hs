@@ -20,7 +20,7 @@ config = Config {
 
 -- | Main function, must be invoked with onexec
 -- REMEMBER: Replace Auth.config with your own config
-main = loadGAPI Auth.config $ \token -> do
+main = withGAPI Auth.config $ \token -> do
   if oa2success token
     then application 
     else domPut $ "GAPI Error" ++ errorMsg token

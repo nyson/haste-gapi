@@ -22,7 +22,7 @@ domPut str = do
   withElem "log" (`appendChild` entry)
 
 -- Replace Auth.cfg with your own config
-main = loadGAPI' "loadgapi" Auth.config $ \token -> do
+main = withGAPI Auth.config $ \token -> do
   if oa2success token
     then domPut "Successful GAPI Login!"
     else domPut $ "GAPI Error" ++ errorMsg token
