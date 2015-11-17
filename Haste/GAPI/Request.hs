@@ -1,7 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Haste.GAPI.Request where
+module Haste.GAPI.Request ( Promise,
+                            RequestM,
+                            Reason,
+                            Response, 
+                            Params,
+                            Request,
+                            Path,
+                            gapiError, 
+                            rawRequest,
+                            withRequest,
+                            cRequest
+                          ) where
 
-import Haste.GAPI.Promise
+import Haste.GAPI.Request.Promise
 import Haste.Foreign
 import Haste.Concurrent
 
@@ -11,6 +22,26 @@ import Control.Monad.IO.Class
 import Data.Default
 
 import qualified Haste.JSString as JS
+
+-- JavaScript exports --------------------------------------------------------
+-- | Creates a request object 
+jsCreateRequest :: String -> JSAny -> IO JSAny
+jsCreateRequest = ffi "function(p, ps) {\
+\return gapi.client.request({'path': p, 'params': ps})\
+\}"
+
+-- | Executes a request and performs the given action as a continuation
+jsExecuteRequestThen :: String -> JSAny -> (Response -> IO ()) -> IO ()
+jsExecuteRequestThen = ffi "function(p, ps, callback) {\
+\ console.debug('invoked jsExecuteRequestThen');\ 
+\ gapi.client.request({'path': p, 'params': ps}).then({\
+\'then': function(resp) {console.debug('wtf'); callback(resp);}, \
+\'error': function(err) {console.debug('error'); console.debug(err);}\
+\});\
+\}"
+
+
+-- Types ---------------------------------------------------------------------
 
 -- | Parameters for a GAPI request
 data Params = Params [(String, String)]
@@ -33,15 +64,14 @@ instance Show Request where
       in "Request: " ++ concatMap showDict [("Path", p), ("Method", m),
                                             ("Params", show pms)]
 instance Default Request where
-  def = rawRequest "" []
-
+  def = rawRequest "" $ Params []
 
 
 -- | Creates a request by manually entering request path and parameters
-rawRequest :: String -> [(String, String)] -> Request
-rawRequest p kv = Request { path = p,
+rawRequest :: String -> Params -> Request
+rawRequest p ps = Request { path = p,
                             method = "GET",
-                            params = Params kv,
+                            params = ps,
                             headers = "",
                             body = "" }
 
@@ -50,23 +80,6 @@ rawRequest p kv = Request { path = p,
 withRequest :: Request -> Promise -> IO ()
 withRequest r p = do re <- jsCreateRequest (path r) (toAny $ params r)
                      applyPromise re p
-
--- | Creates a request object 
-jsCreateRequest :: String -> JSAny -> IO JSAny
-jsCreateRequest = ffi "function(p, ps) {\
-\return gapi.client.request({'path': p, 'params': ps})\
-\}"
-
--- | Executes a request and performs the given action as a continuation
-jsExecuteRequestThen :: String -> JSAny -> (Response -> IO ()) -> IO ()
-jsExecuteRequestThen = ffi "function(p, ps, callback) {\
-\ console.debug('invoked jsExecuteRequestThen');\ 
-\ gapi.client.request({'path': p, 'params': ps}).then({\
-\'then': function(resp) {console.debug('wtf'); callback(resp);}, \
-\'error': function(err) {console.debug('error'); console.debug(err);}\
-\});\
-\}"
-
 
 -- | Executes a request, blocking while waiting for the result and then
 -- return the finished equation
@@ -90,32 +103,40 @@ cRequest r = do
 --     request aPath' params'
 -- @
 -- 
-data RequestM a = RequestM a
-
-instance Functor RequestM where
-  fmap f (RequestM a) = RequestM $ f a
-
-instance Applicative RequestM where
-  (RequestM f) <*> (RequestM a) = RequestM $ f a
-  pure = RequestM
-
-instance Monad RequestM where
-  (RequestM a) >>= f = f a
-  return = RequestM
+newtype RequestM a = Req {unR :: CIO (Either String a)}
 
 instance MonadIO RequestM where
-  liftIO f = RequestM $ undefined
+  -- liftIO :: IO a -> RequestM a 
+  liftIO = Req . unR . liftIO
+
+instance Monad RequestM where
+  -- return :: a -> RequestM a
+  return a = Req . return $ Right a
+  -- (>>=) :: RequestM a -> (a -> RequestM b) -> RequestM b
+  (Req a) >>= f = Req $ do
+    a' <- a
+    case a' of
+      Right good -> unR $ f good
+      Left bad -> return $ Left bad
+
+instance Applicative RequestM where
+  (<*>) = ap
+  pure = return
+
+instance Functor RequestM where
+  -- fmap :: (a -> b) -> RequestM a -> RequestM b
+  fmap f (Req a) = Req $ do
+    a' <- a
+    return $ case a' of
+      Right good -> Right $ f good
+      Left err   -> Left err
   
 -- | A Request Path
 type Path = String
 
--- | Executes a request and returns the result
-execute :: RequestM a -> Response
-execute (RequestM a) = undefined
-
 -- | Executes a request
 request :: Path -> Params -> RequestM Response
-request = undefined 
+request p params = undefined
 
 -- | Fetches a value from a response. The return type must have
 --   a ToAny instance

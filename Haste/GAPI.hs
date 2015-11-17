@@ -16,7 +16,6 @@ module Haste.GAPI (Config(..),
                   ) where 
 
 import Haste.GAPI.Request
-import Haste.GAPI.Promise
 
 import Haste.Foreign
 import qualified Haste.JSString as J
