@@ -15,11 +15,12 @@ type Reason = JSAny
 data Promise = Promise (Response -> IO ()) (Reason -> IO ())
              | Callback (Response -> IO ())
 
-{- Some kind of MVar so represent the result maybe? -}
+{- TODO: Some kind of MVar so represent the result maybe? -}
 instance ToAny Promise where
   toAny (Promise thn err) = toObject [("then", toAny thn),
                                       ("error", toAny err)]
-  toAny (Callback cbk) = toObject [("then", toAny cbk), ("error", toAny gapiError)]
+  toAny (Callback cbk) = toObject [("then", toAny cbk),
+                                   ("error", toAny gapiError)]
 
 applyPromise :: JSAny -> Promise -> IO ()
 applyPromise = ffi "function(action, p) {action.then(p.then, p.error);}"
