@@ -1,20 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Haste.GAPI.Request ( Promise,
-                            RequestM,
-                            Reason,
-                            Response, 
-                            Params,
-                            Request,
-                            Path,
+                            RequestM (..),
+                            Reason (..),
+                            Response (..), 
+                            Params (..),
+                            Request (..),
+                            Path (..),
                             gapiError, 
                             rawRequest,
                             withRequest,
-                            cRequest
+                            cRequest,
+                            rexec,
+                            request
+                            
                           ) where
 
 import Haste.GAPI.Request.Promise
 import Haste.Foreign
-import Haste.Concurrent
+import Haste.Concurrent 
 
 import Control.Applicative
 import Control.Monad
@@ -50,6 +53,10 @@ data Params = Params [(String, String)]
 instance ToAny Params where
   toAny (Params ps) = let objField (k,v) = (JS.pack k, toAny $ JS.pack v)
                       in toObject $ map objField ps 
+
+instance Default Params where
+  def = Params []
+
 
 -- | Request with parameters and everything
 data Request = Request { path    :: String,
@@ -100,19 +107,19 @@ cRequest r = do
 -- @
 --  do response <- request aPath params
 --     params' <- fields ["name", "email"] response
---     request aPath' params'
+--     response' <- request aPath' params'
 -- @
--- 
 newtype RequestM a = Req {unR :: CIO (Either String a)}
 
+instance MonadConc RequestM where
+  liftConc a = Req $ a >>= return . Right
+  fork (Req c) = Req $ (fork $ void c) >>= return . Right
+
 instance MonadIO RequestM where
-  -- liftIO :: IO a -> RequestM a 
-  liftIO = Req . unR . liftIO
+  liftIO a = Req $ liftIO a >>= return . Right
 
 instance Monad RequestM where
-  -- return :: a -> RequestM a
   return a = Req . return $ Right a
-  -- (>>=) :: RequestM a -> (a -> RequestM b) -> RequestM b
   (Req a) >>= f = Req $ do
     a' <- a
     case a' of
@@ -124,19 +131,27 @@ instance Applicative RequestM where
   pure = return
 
 instance Functor RequestM where
-  -- fmap :: (a -> b) -> RequestM a -> RequestM b
-  fmap f (Req a) = Req $ do
-    a' <- a
-    return $ case a' of
-      Right good -> Right $ f good
-      Left err   -> Left err
-  
+  fmap f m = m >>= return . f
+    
 -- | A Request Path
 type Path = String
 
 -- | Executes a request
+rexec :: RequestM () -> IO ()
+rexec = concurrent . void . unR
+
+-- | Creates a request
 request :: Path -> Params -> RequestM Response
-request p params = undefined
+request p params = customRequest . rawRequest p $ params
+
+customRequest :: Request -> RequestM Response
+customRequest req = do
+  v <- newEmptyMVar
+  liftConc . fork . liftIO $ do
+    resp <- jsCreateRequest (path req) (toAny $ params req)
+    applyPromise resp $ Promise (concurrent . putMVar v . Right)
+      (\r -> concurrent . putMVar v . Left $ "Request error: " ++ show req)
+  Req $ takeMVar v
 
 -- | Fetches a value from a response. The return type must have
 --   a ToAny instance

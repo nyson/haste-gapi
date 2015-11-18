@@ -25,10 +25,9 @@ cabal-version:       >=1.10
 
 library
   -- Modules exported by the library.
-  exposed-modules:     Haste.GAPI, Haste.GAPI.Request, Haste.GAPI.Promise
-  
+  exposed-modules:     Haste.GAPI, Haste.GAPI.Request
   -- Modules included in this library but not exported.
-  -- other-modules:       
+  other-modules:       Haste.GAPI.Request.Promise
   other-extensions:    OverloadedStrings
   build-depends:       base >=4.6, haste-lib >=0.5 && <= 0.6,
                        data-default, transformers
