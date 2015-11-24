@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Haste.GAPI.Promise where
+module Haste.GAPI.Request.Promise where
 
 import qualified Haste.JSString as J
 
