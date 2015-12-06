@@ -11,12 +11,13 @@ module Haste.GAPI (Config(..),
                    loadLibrary,
                    withLibrary,
                    gapiError,
+                   fromResult
                    
                    
                   ) where 
 
 import Haste.GAPI.Request
-
+import Haste.GAPI.Request.Result
 import Haste.Foreign
 import qualified Haste.JSString as J
 import Data.Default

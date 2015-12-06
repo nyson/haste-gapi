@@ -19,6 +19,7 @@ import Haste.GAPI.Request.Promise
 import Haste.GAPI.Request.RequestM
 import Haste.GAPI.Request.Types
 import Haste.GAPI.Request.Raw
+import Haste.GAPI.Request.Result
 
 
 import Haste.Foreign
@@ -46,15 +47,15 @@ rexec :: RequestM () -> IO ()
 rexec = concurrent . void . unR
 
 -- | Creates a request
-request :: Path -> Params -> RequestM Response
+request :: Path -> Params -> RequestM Result
 request p params = customRequest . rawRequest p $ params
 
-customRequest :: Request -> RequestM Response
+customRequest :: Request -> RequestM Result
 customRequest req = do
   v <- newEmptyMVar
   liftConc . fork . liftIO $ do
     resp <- jsCreateRequest (path req) (toAny $ params req)
-    applyPromise resp $ Promise (concurrent . putMVar v . Right)
+    applyPromise resp $ Promise (concurrent . putMVar v . Right . Result)
       (\r -> concurrent . putMVar v . Left $ "Request error: " ++ show req)
   Req $ takeMVar v
 
