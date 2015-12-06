@@ -25,7 +25,7 @@ handles that for you!
 Usage
 -----
 While Haste-GAPI doesn't necessary needs it to work, I recommend you to
-compile your Haste-GAPI applications with the --onexec flag, as in
+compile your Haste-GAPI applications with the `--onexec` flag, as in
 `haste --onexec CoolSite.hs`. If you don't, you may notice a slightly slower
 load time on sites with lots of resources.
 
@@ -66,11 +66,12 @@ an `OAuth2Token` in which we can see if the authorization was successful.
 ```haskell
 import Haste.GAPI
 
-
 main = loadGAPI cfg
        $ \token -> if oa2success token then putStrLn "We're in!!" 
 	           else putStrLn $ "Something went wrong: " ++ oa2error token
 ```
+
+### Making a request with RequestM (rexec)!
 
 Let's use what we know and perform a request! The code below will access
 the Google+ APIs and ask who you are!
@@ -83,7 +84,6 @@ import Haste.GAPI.GPlus
 
 import Control.Monad.IO.Class
 import Data.Default
-
 
 main = withGAPI Auth.config $ \t -> case t of
   OA2Error {errorMsg = e} -> putStrLn $ "Error lol " ++ e
