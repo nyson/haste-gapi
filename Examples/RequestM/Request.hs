@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Haste
-import Haste.DOM
-import Haste.Foreign
+import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
+import Haste.Foreign (ffi)
 import Haste.GAPI
 import Haste.GAPI.Request
 import Haste.GAPI.GPlus

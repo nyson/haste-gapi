@@ -76,6 +76,11 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
+oa2error OA2Succes {}
+  = error "Can't get an error message from a success token!"
+oa2error OA2Error {errorMsg = e} = e
+
+
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 withGAPI cfg handler = do
   loadGAPI' "GAPILoader" cfg handler
