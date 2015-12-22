@@ -4,18 +4,22 @@
 module Haste.GAPI.GPlus where
 
 
-import Haste.GAPI.Request.Result
-import Haste.Foreign hiding (get)
+import Haste.GAPI.Request.Result hiding (get, has)
+
 import System.IO.Unsafe
+
+import Haste.Foreign (fromAny, toAny, FromAny, ffi, JSAny, has)
 import qualified Haste.Foreign as F
 
 import Haste.GAPI.Types (ETag)
 
-debugAny :: JSAny -> IO ()
-debugAny = ffi "function(x) {console.debug(x);}"
+
+-- -- TODO: Export to a debug module?
+-- debugAny :: JSAny -> IO ()
+-- debugAny = ffi "(function(x) {console.debug(x);})"
 
 emptyString :: IO JSAny
-emptyString = ffi "function() {return \"\";}"
+emptyString = ffi "(function() {return \"\";})"
 
 get obj field = do
   hast <- has obj field
@@ -143,27 +147,28 @@ instance FromAny Place where
 instance FromAny AgeRange where
   fromAny a = AgeRange <$> get a "min" <*> get a "max"
     
-
 instance FromAny Cover where
   fromAny a = Cover <$> get a "layout"
               <*> get a "coverPhoto" <*> get a "coverInfo"
 
 instance FromResult Person where
-  fromResult (Result r)
-    = liftIO $ do a <- get r "result"
-                  Person <$> get a "kind" 
-                    <*> get a "etag"           <*> get a "nickname"
-                    <*> get a "occupation"     <*> get a "skills"
-                    <*> get a "birthday"       <*> get a "gender"
-                    <*> get a "emails"         <*> get a "urls"
-                    <*> get a "objectType"     <*> get a "id"
-                    <*> get a "displayName"    <*> get a "name"
-                    <*> get a "tagline"        <*> get a "braggingRights"
-                    <*> get a "aboutMe"        <*> get a "relationshipStatus"
-                    <*> get a "url"            <*> get a "image"
-                    <*> get a "organizations"  <*> get a "placesLived"
-                    <*> get a "isPlusUser"     <*> get a "language"
-                    <*> get a "ageRange"       <*> get a "plusOneCount"
-                    <*> get a "circledByCount" <*> get a "verified"
-                    <*> get a "cover"          <*> get a "domain"
---    where a = unsafePerformIO $ get r "result"
+  fromResult = dFromResult
+
+instance FromAny Person where
+  fromAny r
+    = do a <- get r "result"
+         Person <$> get a "kind" 
+           <*> get a "etag"           <*> get a "nickname"
+           <*> get a "occupation"     <*> get a "skills"
+           <*> get a "birthday"       <*> get a "gender"
+           <*> get a "emails"         <*> get a "urls"
+           <*> get a "objectType"     <*> get a "id"
+           <*> get a "displayName"    <*> get a "name"
+           <*> get a "tagline"        <*> get a "braggingRights"
+           <*> get a "aboutMe"        <*> get a "relationshipStatus"
+           <*> get a "url"            <*> get a "image"
+           <*> get a "organizations"  <*> get a "placesLived"
+           <*> get a "isPlusUser"     <*> get a "language"
+           <*> get a "ageRange"       <*> get a "plusOneCount"
+           <*> get a "circledByCount" <*> get a "verified"
+           <*> get a "cover"          <*> get a "domain"

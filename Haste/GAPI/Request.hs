@@ -41,7 +41,8 @@ cRequest r = do
     $ Promise (concurrent . putMVar v)
     $ \_ -> putStrLn "Error"
   takeMVar v
-    
+
+-- TODO: Better name?   
 -- | Executes a request
 rexec :: RequestM () -> IO ()
 rexec = concurrent . void . unR
@@ -58,6 +59,9 @@ customRequest req = do
     applyPromise resp $ Promise (concurrent . putMVar v . Right . Result)
       (\r -> concurrent . putMVar v . Left $ "Request error: " ++ show req)
   Req $ takeMVar v
+
+
+-- TODO: Move code below to Types/Result? 
 
 -- | Fetches a value from a response. The return type must have
 --   a ToAny instance

@@ -4,7 +4,8 @@ import Haste
 import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
 import Haste.Foreign (ffi)
 import Haste.GAPI
-import Haste.GAPI.Request
+import Haste.GAPI.Request hiding (get, has)
+import Haste.GAPI.Request.Result as R
 import Haste.GAPI.GPlus
 
 import Control.Monad.IO.Class
@@ -30,6 +31,5 @@ main = withGAPI Auth.config $ \t -> case t of
   OA2Error {errorMsg = e} -> putStrLn $ "Error lol " ++ e
   OA2Success {}           -> rexec $ do
     response <- request "plus/v1/people/me" def
-    person <- fromResult response
-    liftIO $ put $ "Hello " ++ (show . name) person ++ "!"
-
+    name <- R.deepGet response "result.displayName"
+    liftIO $ put $ "Hello " ++ name ++ "!"

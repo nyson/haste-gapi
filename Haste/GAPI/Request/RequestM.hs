@@ -5,6 +5,8 @@ import Data.Functor
 import Haste.Concurrent
 import Control.Monad.IO.Class
 
+type Error = String
+
 -- | Type responsible for executing sensible requests.
 -- Example: This code will execute a request with a path and a set of
 --  parameters (params), uses `fields` for fetching the fields "name" and
@@ -15,7 +17,7 @@ import Control.Monad.IO.Class
 --     params' <- fields ["name", "email"] response
 --     response' <- request aPath' params'
 -- @
-newtype RequestM a = Req {unR :: CIO (Either String a)}
+newtype RequestM a = Req {unR :: CIO (Either Error a)}
 
 instance MonadConc RequestM where
   liftConc a = Req $ a >>= return . Right
@@ -25,12 +27,15 @@ instance MonadIO RequestM where
   liftIO a = Req $ liftIO a >>= return . Right
 
 instance Monad RequestM where
+  fail err = Req . return $ Left err
   return a = Req . return $ Right a
   (Req a) >>= f = Req $ do
     a' <- a
     case a' of
       Right good -> unR $ f good
-      Left bad -> return $ Left bad
+      Left bad -> do
+        liftIO $ putStrLn bad
+        return $ Left bad
 
 instance Applicative RequestM where
   (<*>) = ap

@@ -1,4 +1,9 @@
 {- Generates perfect requests every time
+
+TODO: Remove this? RequestM has taken over its responsibility, and any
+There is no fork update will be incorporated without any API breaking changes
+to it
+
 <http://community.haskell.org/~simonmar/papers/haxl-icfp14.pdf There is no Fork>
 -}
 

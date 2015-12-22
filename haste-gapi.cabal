@@ -27,17 +27,19 @@ library
   -- Modules exported by the library.
   exposed-modules:     Haste.GAPI,
                        Haste.GAPI.Request,
-                       Haste.GAPI.GPlus
+                       Haste.GAPI.GPlus,
+                       Haste.GAPI.Request.Result
+                       
   -- Modules included in this library but not exported.
   other-modules:       Haste.GAPI.Request.Promise,
-                       Haste.GAPI.Request.Result,
+--                       Haste.GAPI.Request.Result,
                        Haste.GAPI.Request.RequestM,
                        Haste.GAPI.Request.Types
                        Haste.GAPI.Types
                        
   other-extensions:    OverloadedStrings
   build-depends:       base >=4.6, haste-lib >=0.5 && <= 0.6,
-                       data-default, transformers
+                       data-default, transformers, haste-prim
   -- Directories containing source files.
   -- hs-source-dirs:      
   default-language:    Haskell2010

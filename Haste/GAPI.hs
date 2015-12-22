@@ -17,7 +17,7 @@ module Haste.GAPI (Config(..),
                   ) where 
 
 import Haste.GAPI.Request
-import Haste.GAPI.Request.Result
+import Haste.GAPI.Request.Result hiding (get, has)
 import Haste.Foreign
 import qualified Haste.JSString as J
 import Data.Default
@@ -76,7 +76,7 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
-oa2error OA2Succes {}
+oa2error OA2Success {}
   = error "Can't get an error message from a success token!"
 oa2error OA2Error {errorMsg = e} = e
 
@@ -97,7 +97,7 @@ loadGAPI' symbol cfg handler
 
 -- | Returns the token from the current GAPI state
 getToken :: IO OAuth2Token
-getToken = ffi "function() {return gapi.auth.getToken();}"
+getToken = ffi "(function() {return gapi.auth.getToken();})"
 
 -- | Loads a library, and then executes the second argument as a callback
 withLibrary :: Library -> IO () -> IO ()
@@ -111,36 +111,36 @@ loadLibrary (Lib name version) promise = loadLibPromise name version promise
 -- FFI Functions and other backendy stuff ------------------------------------
 -- | Loads a library and then issues a callback
 loadLibCallback :: String -> String -> IO () -> IO ()
-loadLibCallback = ffi "function(n, v, c) { gapi.client.load(n, v, c); }"
+loadLibCallback = ffi "(function(n, v, c) { gapi.client.load(n, v, c); })"
 
 -- | Loads a library and then applies the promise 
 loadLibPromise :: String -> String -> Promise -> IO ()
-loadLibPromise = ffi "function(n, v, p) {\
-\gapi.client.load(n, v).then(p.then, p.error);}"
+loadLibPromise = ffi "(function(n, v, p) {\
+\gapi.client.load(n, v).then(p.then, p.error);})"
 
 -- | Loads the GAPI Client 
 loadClient :: Config -> IO () -> IO ()
-loadClient = ffi "function(cfg, auth){\
+loadClient = ffi "(function(cfg, auth){\
 \gapi.client.setApiKey(cfg.apiKey); \
-\window.setTimeout(auth, 1);}"
+\window.setTimeout(auth, 1);})"
 
 -- | Authenticates the user. Should be invoked by loadClient
 auth :: Config -> (OAuth2Token -> IO ()) -> IO ()
-auth = ffi "function(cfg, ah)\
+auth = ffi "(function(cfg, ah)\
 \{gapi.auth.authorize({\
  \'client_id': cfg.clientID, \
  \'scope': cfg.scopes, \
  \'immediate': cfg.immediate}, \
-\ah);}"
+\ah);})"
 
 -- | Export the loader symbol 
 exportLoaderSymbol :: String -> IO () -> IO ()
-exportLoaderSymbol = ffi "function(s, f) {window[s] = f;}"
+exportLoaderSymbol = ffi "(function(s, f) {window[s] = f;})"
 
 -- | Loads the external GAPI scripts
 loadGAPIExternals :: String -> IO ()
-loadGAPIExternals = ffi "function(sym) {\
+loadGAPIExternals = ffi "(function(sym) {\
 \var s = document.createElement('script');\
 \s.setAttribute('src', 'https://apis.google.com/js/client.js?onload=' + sym);\
 \s.setAttribute('type', 'text/javascript');\
-\document.head.appendChild(s);}"
+\document.head.appendChild(s);})"

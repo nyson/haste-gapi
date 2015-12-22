@@ -1,4 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+{- TODO: Fix
+* gapiError should probably not be defined here
+* what is lookupAny doing here?
+* should Haste.Promise even be a separate thing?
+-}
+
 module Haste.GAPI.Request.Promise where
 
 import qualified Haste.JSString as J
@@ -23,7 +29,7 @@ instance ToAny Promise where
                                    ("error", toAny gapiError)]
 
 applyPromise :: JSAny -> Promise -> IO ()
-applyPromise = ffi "function(action, p) {action.then(p.then, p.error);}"
+applyPromise = ffi "(function(action, p) {action.then(p.then, p.error);})"
 
 -- | Default error handler in promises
 gapiError :: (JSString -> IO ()) -> Reason -> IO ()
