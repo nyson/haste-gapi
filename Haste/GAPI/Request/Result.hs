@@ -55,12 +55,10 @@ lookupAny root i = foldM hasGet (Just root) $ J.match (J.regex "[^.]+" "g") i
                                        else pure Nothing
 
 -- | like get, but will look at deeper objects given a `.` separated string.
-deepGet :: (FromAny a) => Result -> String -> RequestM a
-deepGet root keys = do
-  looked <- liftIO $ lookupAny (v root) (J.pack keys)
-  case looked of
-    Just a  -> liftIO $ fromAny a
-    Nothing -> fail $ "Can't find anything at '" ++ keys ++ "'"
+deepGet :: (FromAny a) => Result -> String -> RequestM (Maybe a)
+deepGet root keys = liftIO $ do l <- lookupAny (v root) (J.pack keys)
+                                case l of Just a -> Just <$> fromAny a
+                                          Nothing -> return Nothing 
   
 -- | Gets a field from a result, on missing field RequestM will fail.
 get :: (FromAny a) => Result -> String -> RequestM a

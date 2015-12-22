@@ -76,8 +76,7 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
-oa2error OA2Success {}
-  = error "Can't get an error message from a success token!"
+oa2error OA2Success {} = error "Can't get an error message from a success token!"
 oa2error OA2Error {errorMsg = e} = e
 
 
