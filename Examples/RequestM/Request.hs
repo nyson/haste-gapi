@@ -26,13 +26,12 @@ put s = do
                       output `appendChild` item
                       documentBody `appendChild` output
 
-main = withGAPI Auth.config greet
-
-greet :: OAuth2Token -> IO ()
-greet OA2Error {errorMsg = e} =
-  put $ "I can't greet people with invalid access tokens :( (" ++ e ++ ")"
-  
-greet OA2Success {} = rexec $ do
+main = withGAPI Auth.config $ \token -> case token of
+  OA2Success {}           -> greet
+  OA2Error {errorMsg = e} -> put $ "I can't greet people with invalid access"
+                             ++ " tokens :( (" ++ e ++ ")"
+greet :: IO ()
+greet = rexec $ do
     response <- request "plus/v1/people/me" def
     Just name <- R.deepGet response "result.displayName"
     liftIO $ put $ "Hello " ++ name ++ "!"

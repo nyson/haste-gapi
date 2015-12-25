@@ -37,7 +37,6 @@ class FromResult result where
 dFromResult :: FromAny a => Result -> RequestM a
 dFromResult r = liftIO $ fromAny (v r)
 
-
 debugPrintAny :: JSAny -> IO ()
 debugPrintAny = ffi "(function(x) {console.debug(x)})"
 
@@ -59,7 +58,7 @@ deepGet :: (FromAny a) => Result -> String -> RequestM (Maybe a)
 deepGet root keys = liftIO $ do l <- lookupAny (v root) (J.pack keys)
                                 case l of Just a -> Just <$> fromAny a
                                           Nothing -> return Nothing 
-  
+
 -- | Gets a field from a result, on missing field RequestM will fail.
 get :: (FromAny a) => Result -> String -> RequestM a
 get r k = do exists <- has r k
