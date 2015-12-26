@@ -4,6 +4,7 @@ import Control.Monad
 import Data.Functor
 import Haste.Concurrent
 import Control.Monad.IO.Class
+import Control.Applicative
 
 type Error = String
 

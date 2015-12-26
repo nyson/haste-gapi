@@ -3,15 +3,12 @@
 
 module Haste.GAPI.GPlus where
 
-
-import Haste.GAPI.Request.Result hiding (get, has)
-
-import System.IO.Unsafe
-
+import Haste.GAPI.Request hiding (get, has)
 import Haste.Foreign (fromAny, toAny, FromAny, ffi, JSAny, has)
 import qualified Haste.Foreign as F
-
 import Haste.GAPI.Types (ETag)
+
+import Control.Applicative
 
 
 -- -- TODO: Export to a debug module?

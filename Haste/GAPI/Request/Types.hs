@@ -10,6 +10,8 @@ module Haste.GAPI.Request.Types where
 -}
 import Haste.Foreign
 import Data.Default
+import Control.Applicative
+
 import qualified Haste.JSString as JS
 
 getKV :: JSAny -> IO [(String, String)]

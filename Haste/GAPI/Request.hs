@@ -16,7 +16,7 @@ module Haste.GAPI.Request ( Promise,
                             request,
 
                             debugResult, has, get, parp, fromResult, liftIO,
-                            deepGet
+                            deepGet, defFromResult
                             
                           ) where
 
@@ -31,6 +31,7 @@ import Haste.Foreign hiding (has, get)
 import Haste.Concurrent 
 
 import Control.Monad
+import Control.Applicative
 
 -- | Applies request and executes the given Promise.
 withRequest :: Request -> Promise -> IO ()

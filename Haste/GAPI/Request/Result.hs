@@ -18,9 +18,9 @@ import qualified Haste.Foreign as F
 import qualified Haste.JSString as J
 import Haste.Prim (JSString)
 
-
 import Control.Monad
 import Control.Monad.IO.Class
+import Control.Applicative 
 
 -- TODO: Get some input into making better result desing?
 newtype Result = Result {v :: JSAny}
