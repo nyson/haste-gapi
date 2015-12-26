@@ -8,13 +8,8 @@ module Haste.GAPI.Request ( Promise,
                             Result(..),
                             Path (..),
                             FromResult,
-                            gapiError, 
-                            rawRequest,
-                            withRequest,
-                            cRequest,
-                            req,
-                            request,
-
+                            gapiError, rawRequest, withRequest,
+                            cRequest, req, request,
                             debugResult, has, get, parp, fromResult, liftIO,
                             deepGet, defFromResult
                             

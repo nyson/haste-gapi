@@ -12,6 +12,8 @@ import qualified Haste.JSString as J
 import Haste.Foreign
 import Haste
 
+import Control.Applicative
+
 import Control.Monad
 import Data.Maybe
 import qualified Data.List as List
