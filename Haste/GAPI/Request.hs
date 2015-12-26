@@ -15,7 +15,8 @@ module Haste.GAPI.Request ( Promise,
                             req,
                             request,
 
-                            debugResult, has, get, parp, fromResult
+                            debugResult, has, get, parp, fromResult, liftIO,
+                            deepGet
                             
                           ) where
 

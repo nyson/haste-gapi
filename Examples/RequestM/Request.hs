@@ -31,5 +31,5 @@ main = withGAPI Auth.config $ \token -> case token of
 greet :: IO ()
 greet = req $ do
     response <- request "plus/v1/people/me" def
-    Just name <- R.deepGet response "result.displayName"
+    Just name <- deepGet response "result.displayName"
     liftIO $ put $ "Hello " ++ name ++ "!"
