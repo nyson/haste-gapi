@@ -5,7 +5,7 @@ ghc:
   - '7.8'
 
 before_install:
-  - cabal install haste-compiler
+  - cabal install haste-compiler-0.5.3
   - haste-boot
   
 install: 
