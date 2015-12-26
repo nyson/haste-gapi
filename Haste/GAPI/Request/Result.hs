@@ -6,9 +6,9 @@ module Haste.GAPI.Request.Result (
   Result(..),
   FromResult,
   fromResult,
-  dFromResult,
+  defFromResult,
   get, has, deepGet,
-  printResult 
+  debugResult, parp 
   ) where 
 
 import Haste.GAPI.Request.Types
@@ -34,14 +34,14 @@ instance ToAny Result where
 class FromResult result where
   fromResult :: Result -> RequestM result
 
-dFromResult :: FromAny a => Result -> RequestM a
-dFromResult r = liftIO $ fromAny (v r)
+defFromResult :: FromAny a => Result -> RequestM a
+defFromResult r = liftIO $ fromAny (v r)
 
 debugPrintAny :: JSAny -> IO ()
 debugPrintAny = ffi "(function(x) {console.debug(x)})"
 
-printResult :: Result -> RequestM ()
-printResult = liftIO . debugPrintAny . v
+debugResult :: Result -> RequestM ()
+debugResult = liftIO . debugPrintAny . v
 
 
 -- To lookup childerest:
@@ -94,4 +94,25 @@ instance FromResult Int    where fromResult = liftIO . fromAny . v
 instance FromResult Double where fromResult = liftIO . fromAny . v
 
 
+
+-- -- TODO: Move code below to Types/Result? 
+
+-- -- | Fetches a value from a response. The return type must have
+-- --   a ToAny instance
+-- fetch :: FromAny a => Response -> String -> RequestM a
+-- fetch = undefined
+
+-- -- | Puts a value in an object. Must have a ToAny instance
+-- put :: ToAny a => Response -> String -> a -> RequestM ()
+-- put = undefined
+
+-- -- | Takes fields with the given identifiers from response and stores
+-- --   it in a new Params under the same name.
+-- fields :: [String] -> Response -> RequestM Params
+-- fields = undefined
+
+-- -- | Takes fields with the first element of each tuple and puts them
+-- --   in a new Params with the second element of that tuple as identifier
+-- fields' :: [(String, String)] -> Response -> RequestM Params
+-- fields' = undefined
 

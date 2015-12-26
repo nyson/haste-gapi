@@ -152,7 +152,7 @@ instance FromAny Cover where
               <*> get a "coverPhoto" <*> get a "coverInfo"
 
 instance FromResult Person where
-  fromResult = dFromResult
+  fromResult = defFromResult
 
 instance FromAny Person where
   fromAny r

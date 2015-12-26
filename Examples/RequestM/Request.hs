@@ -4,11 +4,9 @@
 
 import Haste
 import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
-import Haste.Foreign (ffi)
 
 import Haste.GAPI
-import Haste.GAPI.Request hiding (get, has)
-import Haste.GAPI.Request.Result as R
+import Haste.GAPI.Request
 import Haste.GAPI.GPlus
 
 import Data.Default
@@ -31,7 +29,7 @@ main = withGAPI Auth.config $ \token -> case token of
   OA2Error {errorMsg = e} -> put $ "I can't greet people with invalid access"
                              ++ " tokens :( (" ++ e ++ ")"
 greet :: IO ()
-greet = rexec $ do
+greet = req $ do
     response <- request "plus/v1/people/me" def
     Just name <- R.deepGet response "result.displayName"
     liftIO $ put $ "Hello " ++ name ++ "!"

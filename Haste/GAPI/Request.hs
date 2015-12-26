@@ -5,13 +5,17 @@ module Haste.GAPI.Request ( Promise,
                             Response (..), 
                             Params (..),
                             Request (..),
+                            Result(..),
                             Path (..),
+                            FromResult,
                             gapiError, 
                             rawRequest,
                             withRequest,
                             cRequest,
-                            rexec,
-                            request
+                            req,
+                            request,
+
+                            debugResult, has, get, parp, fromResult
                             
                           ) where
 
@@ -22,7 +26,7 @@ import Haste.GAPI.Request.Raw
 import Haste.GAPI.Request.Result
 
 
-import Haste.Foreign
+import Haste.Foreign hiding (has, get)
 import Haste.Concurrent 
 
 import Control.Monad
@@ -44,8 +48,8 @@ cRequest r = do
 
 -- TODO: Better name?   
 -- | Executes a request
-rexec :: RequestM () -> IO ()
-rexec = concurrent . void . unR
+req :: RequestM () -> IO ()
+req = concurrent . void . unR
 
 -- | Creates a request
 request :: Path -> Params -> RequestM Result
@@ -59,28 +63,6 @@ customRequest req = do
     applyPromise resp $ Promise (concurrent . putMVar v . Right . Result)
       (\r -> concurrent . putMVar v . Left $ "Request error: " ++ show req)
   Req $ takeMVar v
-
-
--- TODO: Move code below to Types/Result? 
-
--- | Fetches a value from a response. The return type must have
---   a ToAny instance
-fetch :: FromAny a => Response -> String -> RequestM a
-fetch = undefined
-
--- | Puts a value in an object. Must have a ToAny instance
-put :: ToAny a => Response -> String -> a -> RequestM ()
-put = undefined
-
--- | Takes fields with the given identifiers from response and stores
---   it in a new Params under the same name.
-fields :: [String] -> Response -> RequestM Params
-fields = undefined
-
--- | Takes fields with the first element of each tuple and puts them
---   in a new Params with the second element of that tuple as identifier
-fields' :: [(String, String)] -> Response -> RequestM Params
-fields' = undefined
 
 merge :: Params -> Params -> Params
 merge (Params xs) (Params ys) = Params $ xs ++ ys 
