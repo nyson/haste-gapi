@@ -8,6 +8,7 @@ import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
 import Haste.GAPI
 import Haste.GAPI.Request
 import Haste.GAPI.GPlus
+import Haste.GAPI.Debug
 
 import Data.Default
 
