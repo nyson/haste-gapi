@@ -43,16 +43,6 @@ debugPrintAny = ffi "(function(x) {console.debug(x)})"
 debugResult :: Result -> RequestM ()
 debugResult = liftIO . debugPrintAny . v
 
-
--- To lookup childerest:
--- >>> lookup obj "child.childer.childerest"
-lookupAny :: JSAny -> JSString -> IO (Maybe JSAny)
-lookupAny root i = foldM hasGet (Just root) $ J.match (J.regex "[^.]+" "g") i
-  where hasGet :: Maybe JSAny -> JSString -> IO (Maybe JSAny)
-        hasGet (Just parent) id = do h <- F.has parent id
-                                     if h then Just <$> F.get parent id
-                                       else pure Nothing
-
 -- | like get, but will look at deeper objects given a `.` separated string.
 deepGet :: (FromAny a) => Result -> String -> RequestM (Maybe a)
 deepGet root keys = liftIO $ do l <- lookupAny (v root) (J.pack keys)

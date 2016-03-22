@@ -1,22 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Haste.GAPI (Config(..),
+                   module Haste.GAPI.Request,
+                   module Haste.GAPI.Request.Result,
                    OAuth2Token(..),
-                   Library(..),
                    Promise(..),
                    Reason,
                    Response,
                    withGAPI,
                    oa2success,
                    getToken,
-                   loadLibrary,
-                   withLibrary,
                    gapiError,
-                   fromResult                  
-                   
+                   fromResult
+                        
                   ) where 
 
 import Haste.GAPI.Request hiding (get, has)
-import Haste.Foreign
+import Haste.GAPI.Request.Result
+import Haste.Foreign hiding (get, has)
+import qualified Haste.Foreign as FFI
 import qualified Haste.JSString as J
 import Data.Default
 import Control.Monad
@@ -24,7 +25,7 @@ import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
 -- | Represents a GAPILibrary with a name and a version
-data Library = Lib String String
+-- data Library = Lib String String
 
 -- | Google API config
 data Config = Config {clientID  :: String,
@@ -60,13 +61,13 @@ instance Show OAuth2Token where
 
 instance FromAny OAuth2Token where
   fromAny oa2 = do
-    success <- has oa2 "access_token"
+    success <- FFI.has oa2 "access_token"
     if success
-      then OA2Success <$> get oa2 "access_token"
-           <*> get oa2 "expires_in"
-           <*> get oa2 "state"
-      else OA2Error <$> get oa2 "error"
-           <*> get oa2 "state"
+      then OA2Success <$> FFI.get oa2 "access_token"
+           <*> FFI.get oa2 "expires_in"
+           <*> FFI.get oa2 "state"
+      else OA2Error <$> FFI.get oa2 "error"
+           <*> FFI.get oa2 "state"
  
 -- Exported functions --------------------------------------------------------
 -- | Returns true if the token represents a successful authentication
@@ -96,13 +97,13 @@ loadGAPI' symbol cfg handler
 getToken :: IO OAuth2Token
 getToken = ffi "(function() {return gapi.auth.getToken();})"
 
--- | Loads a library, and then executes the second argument as a callback
-withLibrary :: Library -> IO () -> IO ()
-withLibrary (Lib name version) f = loadLibCallback name version f
+-- -- | Loads a library, and then executes the second argument as a callback
+-- withLibrary :: Library -> IO () -> IO ()
+-- withLibrary (Lib name version) f = loadLibCallback name version f
 
--- | Loads a library using a promise
-loadLibrary :: Library -> Promise -> IO ()
-loadLibrary (Lib name version) promise = loadLibPromise name version promise
+-- -- | Loads a library using a promise
+-- loadLibrary :: Library -> Promise -> IO ()
+-- loadLibrary (Lib name version) promise = loadLibPromise name version promise
 
   
 -- FFI Functions and other backendy stuff ------------------------------------

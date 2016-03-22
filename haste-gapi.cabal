@@ -35,17 +35,19 @@ library
                        Haste.GAPI.Request.RequestM,
                        Haste.GAPI.Request.Types,
                        Haste.GAPI.Request.Raw,
-                       Haste.GAPI.Request, 
+                       Haste.GAPI.Request,
+                       Haste.GAPI.GPlus.Person,
 --                       Haste.GAPI.Types,
                        Haste.GAPI.Internals 
 
+  ghc-options:         -Wall                                                
   other-extensions:    OverloadedStrings
   build-depends: base >=4.6, data-default, transformers
   if impl(haste)
     build-depends:       haste-lib >=0.5.1, haste-prim
   else
     build-depends:       haste-compiler
-
+    
   -- Directories containing source files.
   -- hs-source-dirs:      
   default-language:    Haskell2010

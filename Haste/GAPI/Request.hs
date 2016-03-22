@@ -1,19 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Haste.GAPI.Request ( Promise,
-                            RequestM (..),
-                            Reason (..),
-                            Response (..), 
-                            Params (..),
-                            Request (..),
-                            Result(..),
-                            Path (..),
-                            FromResult,
-                            gapiError, rawRequest, withRequest,
-                            cRequest, req, request,
-                            debugResult, has, get, parp, fromResult, liftIO,
-                            deepGet, defFromResult
+module Haste.GAPI.Request (
+  Promise,
+  RequestM (..),
+  Reason (..),
+  Response (..), 
+  Params (..),
+  Request (..),
+  Result(..),
+  Path (..),
+  FromResult,
+  gapiError, rawRequest, withRequest,
+  cRequest, req, request,
+  debugResult, has, get, parp, fromResult, liftIO,
+  deepGet, defFromResult
                             
-                          ) where
+  ) where
 
 import Haste.GAPI.Request.Promise
 import Haste.GAPI.Request.RequestM
@@ -43,7 +44,6 @@ cRequest r = do
     $ \_ -> putStrLn "Error"
   takeMVar v
 
--- TODO: Better name?   
 -- | Executes a request
 req :: RequestM () -> IO ()
 req = concurrent . void . unR
