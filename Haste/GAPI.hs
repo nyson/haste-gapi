@@ -14,7 +14,7 @@ module Haste.GAPI (Config(..),
                         
                   ) where 
 
-import Haste.GAPI.Request hiding (get, has)
+import Haste.GAPI.Request 
 import Haste.GAPI.Request.Result
 import Haste.Foreign hiding (get, has)
 import qualified Haste.Foreign as FFI
@@ -75,8 +75,8 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
-oa2error OA2Success {} = error "Can't get an error message from a success token!"
 oa2error OA2Error {errorMsg = e} = e
+oa2error _ = error "Can't get an error message from a success token!"
 
 
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
@@ -109,7 +109,8 @@ getToken = ffi "(function() {return gapi.auth.getToken();})"
 -- FFI Functions and other backendy stuff ------------------------------------
 -- | Loads a library and then issues a callback
 loadLibCallback :: String -> String -> IO () -> IO ()
-loadLibCallback = ffi "(function(n, v, c) { gapi.client.load(n, v, c); })"
+loadLibCallback = ffi "(function(libraryName, version, callback) { \
+\gapi.client.load(libraryName, version, callback); })"
 
 -- | Loads a library and then applies the promise 
 loadLibPromise :: String -> String -> Promise -> IO ()

@@ -4,14 +4,8 @@
 
 import Haste
 import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
-
 import Haste.GAPI
--- import Haste.GAPI.Request
-import Haste.GAPI.GPlus
--- import Haste.GAPI.Debug
-
 import Data.Default
-
 import Auth
 
 -- | Puts a string on page
@@ -27,7 +21,8 @@ put s = do
 
 main = withGAPI Auth.config $ \token -> case token of
   OA2Success {}           -> greet
-  OA2Error {errorMsg = e} -> put $ "I can't greet people with invalid access"
+  OA2Error {errorMsg = e} -> putStrLn
+                             $ "I can't greet people with invalid access"
                              ++ " tokens :( (" ++ e ++ ")"
 greet :: IO ()
 greet = req $ do
