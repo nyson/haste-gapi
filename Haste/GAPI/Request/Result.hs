@@ -19,7 +19,6 @@ import qualified Haste.JSString as J
 import Haste.Prim (JSString)
 
 import Control.Monad
-import Control.Monad.IO.Class
 import Control.Applicative 
 
 -- TODO: Get some input into making better result desing?
@@ -75,7 +74,7 @@ hasAll r keys = and <$> mapM (has r) keys
 -- | Maps a couple of keys out to a new set of params
 parp :: Result -> [String] -> RequestM Params
 parp r keys = do v <- mapM (get r) keys
-                 return . Params $ zip keys v
+                 return . Params $ zip (map J.pack keys) v
 
 -- Some default instances 
 instance FromResult String where fromResult = liftIO . fromAny . v

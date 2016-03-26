@@ -2,14 +2,16 @@
 
 {- A RequestM example that greets you if you have a Google+ profile! -}
 
+import Prelude hiding (lookup)
 import Haste
+import Haste.JSString (append)
 import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
 import Haste.GAPI
 import Data.Default
 import Auth
 
 -- | Puts a string on page
-put :: String -> IO ()
+put :: JSString -> IO ()
 put s = do
   item <- newElem "li" `with` ["innerHTML" =: s]  
   elem <- elemById "output"
@@ -20,12 +22,12 @@ put s = do
                       documentBody `appendChild` output
 
 main = withGAPI Auth.config $ \token -> case token of
-  OA2Success {}           -> greet
+  OA2Success {}           -> putStrLn (show token) >> greet
   OA2Error {errorMsg = e} -> putStrLn
                              $ "I can't greet people with invalid access"
                              ++ " tokens :( (" ++ e ++ ")"
 greet :: IO ()
 greet = req $ do
     response <- request "plus/v1/people/me" def
-    Just name <- deepGet response "result.displayName"
-    liftIO $ put $ "Hello " ++ name ++ "!"
+    Just name <- lookup response "result.displayName"
+    liftIO $ put $ "Hello " `append` name `append` "!"

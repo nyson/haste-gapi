@@ -1,24 +1,11 @@
-module Haste.GAPI.GPlus
-       (Person(..),
-        Name(..),
-        Site(..),
-        EMail(..), EMailType(..),
-        URL(..), URLType(..),
-        Image(..),
-        Organization(..),
-        AgeRange(..),
-        Cover(..),
-
-        peopleGet, peopleSearch, peopleListByActivity, peopleList
-        
-       )where
+module Haste.GAPI.GPlus where
 
 import Haste.GAPI.Types 
 import Haste.GAPI.GPlus.Person
 import Haste.GAPI.Request
 
 -- | Fetches a user by ID
-peopleGet :: UserID -> RequestM Person 
+peopleGet :: UserID -> RequestM (Result Person)
 peopleGet = undefined
 
 -- | Search after users given a query string
@@ -33,7 +20,7 @@ peopleGet = undefined
 --                 default is 25.
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-peopleSearch :: String -> Params -> RequestM [Person]
+peopleSearch :: String -> Params -> RequestM [Result Person]
 peopleSearch = undefined
 
 -- | List users by activity
@@ -48,7 +35,7 @@ peopleSearch = undefined
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
 peopleListByActivity :: ActivityID -> Collection -> Params
-                        -> RequestM [Person]
+                        -> RequestM [Result Person]
 peopleListByActivity = undefined
 
 -- | List people in a specific collection
@@ -94,7 +81,7 @@ parameter to the value of "nextPageToken" from the previous response.
 
 
 -}
-peopleList :: Collection -> Params -> RequestM [Person]
+peopleList :: Collection -> Params -> RequestM [Result Person]
 peopleList = undefined
 
 

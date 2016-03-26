@@ -1,7 +1,10 @@
+-- TODO: Comment and stuff
+--       Move any library functions to separate module
+
 {-# LANGUAGE OverloadedStrings #-}
 module Haste.GAPI (Config(..),
                    module Haste.GAPI.Request,
-                   module Haste.GAPI.Request.Result,
+                   module Haste.GAPI.Result,
                    OAuth2Token(..),
                    Promise(..),
                    Reason,
@@ -10,12 +13,10 @@ module Haste.GAPI (Config(..),
                    oa2success,
                    getToken,
                    gapiError,
-                   fromResult
-                        
-                  ) where 
+                   ) where 
 
 import Haste.GAPI.Request 
-import Haste.GAPI.Request.Result
+import Haste.GAPI.Result
 import Haste.Foreign hiding (get, has)
 import qualified Haste.Foreign as FFI
 import qualified Haste.JSString as J
@@ -24,14 +25,18 @@ import Control.Monad
 import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
--- | Represents a GAPILibrary with a name and a version
--- data Library = Lib String String
-
 -- | Google API config
-data Config = Config {clientID  :: String,
-                      apiKey    :: String,
-                      scopes    :: String,
-                      immediate :: Bool}
+data Config = Config {
+  -- | GAPI Client ID to generate an access token from
+  clientID  :: String,
+  -- | The API key for your application
+  apiKey    :: String,
+  -- | The availiable scopes for your application
+  scopes    :: String,
+  -- | If true, the token is refreshed behind the scenes
+  immediate :: Bool    
+  }
+              
 instance Show Config where
   show (Config cid key scopes imm)
     = "\nConfig: " ++ concatMap (++ "\n\t") [cid, key, scopes, show imm]
@@ -42,17 +47,24 @@ instance ToAny Config where
                         ("scopes",    toAny $ scopes cfg),
                         ("immediate", toAny $ immediate cfg)]
 
--- | OAuth2 Token
-data OAuth2Token = OA2Success { accessToken :: String,
-                                expiresIn   :: String,
-                                state       :: String}
-                 | OA2Error { errorMsg :: String,
-                              state    :: String}
+-- | OAuth2Token 
+data OAuth2Token = OA2Success {
+  -- | Authenticated access token 
+  accessToken :: String,
+  -- | Expiration of the token 
+  expiresIn   :: String,
+  -- | 
+  state       :: String
+  }
+                 | OA2Error {
+                     errorMsg :: String,
+                     state    :: String}
 
 instance Show OAuth2Token where
   show t = if oa2success t
-           then "Success Token '" ++ (shorten $ accessToken t)
-                ++ "' (expires in "++ expiresIn t ++"s)"
+           then "Success Token: '" ++ shorten (accessToken t)
+                ++ "'\n\t for scopes: '" ++ state t
+                ++ "'\n\t expires in: "++ expiresIn t ++ "s"
            else "Failure Token: " ++ errorMsg t
     where shorten :: String -> String
           shorten str | length str < 16 = str
@@ -75,10 +87,7 @@ oa2success :: OAuth2Token -> Bool
 oa2success OA2Success {} = True
 oa2success _ = False
 
-oa2error OA2Error {errorMsg = e} = e
-oa2error _ = error "Can't get an error message from a success token!"
-
-
+-- | Loads GAPI and insert relevant headers in the DOM
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 withGAPI cfg handler = do
   loadGAPI' "GAPILoader" cfg handler
@@ -96,15 +105,6 @@ loadGAPI' symbol cfg handler
 -- | Returns the token from the current GAPI state
 getToken :: IO OAuth2Token
 getToken = ffi "(function() {return gapi.auth.getToken();})"
-
--- -- | Loads a library, and then executes the second argument as a callback
--- withLibrary :: Library -> IO () -> IO ()
--- withLibrary (Lib name version) f = loadLibCallback name version f
-
--- -- | Loads a library using a promise
--- loadLibrary :: Library -> Promise -> IO ()
--- loadLibrary (Lib name version) promise = loadLibPromise name version promise
-
   
 -- FFI Functions and other backendy stuff ------------------------------------
 -- | Loads a library and then issues a callback
