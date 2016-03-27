@@ -4,7 +4,7 @@
 * should Haste.Promise even be a separate thing?
 -}
 
-module Haste.GAPI.Request.Promise where
+module Haste.GAPI.Internals.Promise where
 
 import qualified Haste.JSString as J
 

@@ -6,8 +6,7 @@ module Haste.GAPI.Request.Raw where
 
 import Haste
 import Haste.Foreign
--- import Haste.GAPI.Request.Types
-import Haste.GAPI.Request.Promise
+import Haste.GAPI.Internals.Promise
 
 -- JavaScript exports --------------------------------------------------------
 -- | Creates a request object 

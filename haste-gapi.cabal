@@ -26,18 +26,21 @@ cabal-version:       >=1.10
 library
   -- Modules exported by the library.
   exposed-modules:     Haste.GAPI,
+                       Haste.GAPI.Result,
+                       Haste.GAPI.Request, 
                        Haste.GAPI.GPlus,
                        Haste.GAPI.Types
-                                              
+
   -- Modules included in this library but not exported.
-  other-modules:       Haste.GAPI.Request.Promise,
-                       Haste.GAPI.Result
+  other-modules:       
                        Haste.GAPI.Request.RequestM,
                        Haste.GAPI.Request.Types,
                        Haste.GAPI.Request.Raw,
-                       Haste.GAPI.Request,
                        Haste.GAPI.GPlus.Person,
-                       Haste.GAPI.Internals 
+                       Haste.GAPI.Internals,
+                       Haste.GAPI.Internals.Promise
+                       -- Haste.GAPI.Request,
+                       -- Haste.GAPI.Result,                       
 
   ghc-options:         -Wall                                                
   other-extensions:    OverloadedStrings

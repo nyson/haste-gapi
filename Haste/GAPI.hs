@@ -2,29 +2,32 @@
 --       Move any library functions to separate module
 
 {-# LANGUAGE OverloadedStrings #-}
-module Haste.GAPI (Config(..),
-                   module Haste.GAPI.Request,
-                   module Haste.GAPI.Result,
-                   OAuth2Token(..),
-                   Promise(..),
-                   Reason,
-                   Response,
-                   withGAPI,
-                   oa2success,
-                   getToken,
-                   gapiError,
+module Haste.GAPI (
+  -- | == Connecting to the Google API
+  withGAPI,
+  oa2success,
+  getToken,
+  Config(..),
+  OAuth2Token(..),
+  -- | == Creating Requests
+  module Haste.GAPI.Request,
+  -- | == Handling Results 
+  module Haste.GAPI.Result,
+  lookupVal
                    ) where 
 
-import Haste.GAPI.Request 
-import Haste.GAPI.Result
 import Haste.Foreign hiding (get, has)
 import qualified Haste.Foreign as FFI
 import qualified Haste.JSString as J
+
+import Haste.GAPI.Request 
+import Haste.GAPI.Result
 import Data.Default
 import Control.Monad
 import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
+
 -- | Google API config
 data Config = Config {
   -- | GAPI Client ID to generate an access token from
@@ -112,10 +115,10 @@ loadLibCallback :: String -> String -> IO () -> IO ()
 loadLibCallback = ffi "(function(libraryName, version, callback) { \
 \gapi.client.load(libraryName, version, callback); })"
 
--- | Loads a library and then applies the promise 
-loadLibPromise :: String -> String -> Promise -> IO ()
-loadLibPromise = ffi "(function(n, v, p) {\
-\gapi.client.load(n, v).then(p.then, p.error);})"
+-- -- | Loads a library and then applies the promise 
+-- loadLibPromise :: String -> String -> Promise -> IO ()
+-- loadLibPromise = ffi "(function(n, v, p) {\
+-- \gapi.client.load(n, v).then(p.then, p.error);})"
 
 -- | Loads the GAPI Client 
 loadClient :: Config -> IO () -> IO ()

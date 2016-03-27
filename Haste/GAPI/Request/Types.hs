@@ -40,6 +40,9 @@ instance ToAny Params where
 instance Default Params where
   def = Params []
 
+-- | Merge two Params
+merge :: Params -> Params -> Params
+merge (Params xs) (Params ys) = Params $ xs ++ ys 
 
 -- | Request with parameters and everything
 data Request = Request { path    :: Path,

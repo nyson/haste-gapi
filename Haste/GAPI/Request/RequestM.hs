@@ -16,15 +16,6 @@ import qualified Haste.JSString as J
 type Error = JSString
 
 -- | Type responsible for executing sensible requests.
--- Example: This code will execute a request with a path and a set of
---  parameters (params), uses `fields` for fetching the fields "name" and
---  "email" from the first response and creating `params'` with these
---  fields, and uses them as argument to the second call to request.
--- @
---  do response <- request aPath params
---     params' <- fields ["name", "email"] response
---     response' <- request aPath' params'
--- @
 newtype RequestM a = Req {unR :: CIO (Either Error a)}
 
 instance MonadConc RequestM where
