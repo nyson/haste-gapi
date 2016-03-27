@@ -3,15 +3,15 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 module Haste.GAPI (
-  -- | == Connecting to the Google API
+  -- | = Connecting to the Google API
   withGAPI,
   oa2success,
   getToken,
   Config(..),
   OAuth2Token(..),
-  -- | == Creating Requests
+  -- | = Creating Requests
   module Haste.GAPI.Request,
-  -- | == Handling Results 
+  -- | = Handling Results 
   module Haste.GAPI.Result,
   lookupVal
   ) where 

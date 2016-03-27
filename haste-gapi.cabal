@@ -8,49 +8,57 @@ name:                haste-gapi
 version:             0.1.0.0
 synopsis:            Google API bindings for the Haste compiler
 -- A longer description of the package.
--- description:         
+description:         This is a library to make use of the Google API Client
+                     Library for JavasScript in a Haskell environment!
+
+                     The library works by wrapping login and giving you a
+                     fancy type to perform your requests in. This will ease
+                     chained requests that would give large amounts of clutter
+                     in JavaScript, while giving you a better ability to
+                     handle errors.
+                     
+                     Your HTML doesn't even need to load the GAPI library itself, Haste-GAPI
+                     handles that for you!
+
 license:             MIT
 license-file:        LICENSE
 author:              Jonathan Skårstedt
-
 maintainer:          jonathan.skarstedt@gmail.com
 -- copyright:           
 category:            Web
 build-type:          Simple
-
--- Extra files to be distributed with the package, such as examples or a 
--- README.
-extra-source-files:  Examples/
 cabal-version:       >=1.10
 
+source-repository head
+ type:     github
+ location: https://github.com/nyson/haste-gapi
+
+
+                     
 library
   -- Modules exported by the library.
   exposed-modules:     Haste.GAPI,
-                       Haste.GAPI.GPlus,
-                       Haste.GAPI.Types
+                       Haste.GAPI.GPlus
 
   -- Modules included in this library but not exported.
-  other-modules:       
+  other-modules:       Haste.GAPI.Types,
                        Haste.GAPI.Result,
                        Haste.GAPI.Request, 
                        Haste.GAPI.Request.RequestM,
                        Haste.GAPI.Request.Types,
                        Haste.GAPI.Request.Raw,
                        Haste.GAPI.GPlus.Person,
+
                        Haste.GAPI.Internals,
                        Haste.GAPI.Internals.Promise
-                       -- Haste.GAPI.Request,
-                       -- Haste.GAPI.Result,                       
 
   ghc-options:         -Wall                                                
   other-extensions:    OverloadedStrings
-  build-depends: base >=4.6, data-default, transformers
+  build-depends:       base >=4.6, data-default, transformers
   if impl(haste)
-    build-depends:       haste-lib >=0.5.1, haste-prim
+    build-depends:     haste-lib >=0.5.1, haste-prim
   else
-    build-depends:       haste-compiler
+    build-depends:     haste-compiler
     
-  -- Directories containing source files.
-  -- hs-source-dirs:      
   default-language:    Haskell2010
   

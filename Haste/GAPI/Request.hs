@@ -12,7 +12,10 @@ module Haste.GAPI.Request (
 
 import Haste.GAPI.Internals.Promise
 import Haste.GAPI.Request.RequestM
-import Haste.GAPI.Request.Types
+import Haste.GAPI.Request.Types (
+  Path,
+  Params(..), Request(..),
+  merge, rawRequest)
 import Haste.GAPI.Request.Raw
 import Haste.GAPI.Result
 import qualified Haste.JSString as J
@@ -31,6 +34,7 @@ req = concurrent . void . unR
 request :: Path -> Params -> RequestM (Result a)
 request p params = customRequest . rawRequest p $ params
 
+-- | Creates a request with a custom request
 customRequest :: Request -> RequestM (Result a)
 customRequest req = do
   v <- newEmptyMVar

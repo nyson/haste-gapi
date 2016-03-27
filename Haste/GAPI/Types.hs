@@ -25,7 +25,6 @@ type Collection = String
 --    website.
 type URLType = String
 
--- TODO: Kill this?
 -- | An image wrapped URL 
 data Image = Image URL
-             deriving Show
+           deriving Show
