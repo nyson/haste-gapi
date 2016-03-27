@@ -14,7 +14,7 @@ module Haste.GAPI (
   -- | == Handling Results 
   module Haste.GAPI.Result,
   lookupVal
-                   ) where 
+  ) where 
 
 import Haste.Foreign hiding (get, has)
 import qualified Haste.Foreign as FFI
@@ -28,15 +28,16 @@ import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
 
--- | Google API config
+-- | Google API config. 
 data Config = Config {
-  -- | GAPI Client ID to generate an access token from
+  -- | Client ID to generate an authentification token from. 
   clientID  :: String,
   -- | The API key for your application
   apiKey    :: String,
-  -- | The availiable scopes for your application
+  -- | Here you enter the availiable scopes for your application.
   scopes    :: String,
-  -- | If true, the token is refreshed behind the scenes
+  -- | If true, the token an attempt will be made to refresh it behind the
+  --    cenes
   immediate :: Bool    
   }
               
@@ -56,7 +57,7 @@ data OAuth2Token = OA2Success {
   accessToken :: String,
   -- | Expiration of the token 
   expiresIn   :: String,
-  -- | 
+  -- | Google API Scopes related to this token.
   state       :: String
   }
                  | OA2Error {
