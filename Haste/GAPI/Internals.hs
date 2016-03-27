@@ -3,9 +3,6 @@
 module Haste.GAPI.Internals where 
 
 import Haste.Foreign hiding (has, get)
-import Control.Monad
-import Control.Applicative 
-import Haste.JSString as J
 import Haste.Prim (JSString)
 import qualified Haste.Foreign as F
 

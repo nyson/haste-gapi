@@ -6,14 +6,8 @@
 
 module Haste.GAPI.Internals.Promise where
 
-import qualified Haste.JSString as J
-
-import Haste.Foreign
-import Haste.GAPI.Internals
 import Haste
-import Control.Applicative
-import Control.Monad
-import Data.Maybe
+import Haste.Foreign
 
 type Response = JSAny
 type Reason = JSAny 
