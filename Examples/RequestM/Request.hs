@@ -4,8 +4,8 @@
 
 import Prelude hiding (lookup)
 import Haste
-import Haste.JSString (append)
-import Haste.DOM (appendChild, with, (=:), newElem, elemById, documentBody)
+import Haste.JSString (pack)
+import Haste.DOM.JSString (appendChild, with, (=:), newElem, elemById, documentBody)
 import Haste.GAPI
 import Data.Default
 import Auth
@@ -29,5 +29,5 @@ main = withGAPI Auth.config $ \token -> case token of
 greet :: IO ()
 greet = req $ do
     response <- request "plus/v1/people/me" def
-    Just name <- lookup response "result.displayName"
-    liftIO $ put $ "Hello " `append` name `append` "!"
+    Just name <- lookupVal response "result.displayName"
+    liftIO . put . pack $ "Hello " ++  name ++ "!"
