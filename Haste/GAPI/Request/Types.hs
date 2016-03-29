@@ -12,9 +12,7 @@ import Haste
 import Haste.Foreign
 import Data.Default
 import qualified Haste.JSString as J
--- import Control.Applicative
-
--- import qualified Haste.JSString as JS
+import Data.Functor ((<$>))
 
 getKV :: JSAny -> IO [(JSString, JSString)]
 getKV = ffi "(function(obj) {\
