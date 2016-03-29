@@ -10,6 +10,8 @@ import Haste.GAPI
 import Data.Default
 import Auth
 
+-- GHC 7.8 compatibility
+import Data.Functor ((<$>))
 
 
 -- | Greet checks you up on Google Plus, and prints your name and picture

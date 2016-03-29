@@ -8,6 +8,10 @@ module Haste.GAPI.Request.Types where
 * Hiding rawRequest and accessing it by other functions instead?
 
 -}
+
+-- GHC 7.8 compatibility
+import Data.Functor ((<$>))
+
 import Haste
 import Haste.Foreign
 import Data.Default

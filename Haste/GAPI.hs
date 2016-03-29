@@ -12,13 +12,14 @@ module Haste.GAPI (
   -- | = Creating Requests
   module Haste.GAPI.Request,
   -- | = Handling Results 
-  module Haste.GAPI.Result,
-  lookupVal
+  module Haste.GAPI.Result
   ) where 
 
 import Haste.Foreign hiding (get, has)
 import qualified Haste.Foreign as FFI
-import qualified Haste.JSString as J
+
+-- GHC 7.8 compatibility
+import Data.Functor ((<$>))
 
 import Haste.GAPI.Request 
 import Haste.GAPI.Result
@@ -42,8 +43,8 @@ data Config = Config {
   }
               
 instance Show Config where
-  show (Config cid key scopes imm)
-    = "\nConfig: " ++ concatMap (++ "\n\t") [cid, key, scopes, show imm]
+  show (Config cid key scopes' imm)
+    = "\nConfig: " ++ concatMap (++ "\n\t") [cid, key, scopes', show imm]
 
 instance ToAny Config where
   toAny cfg = toObject [("clientID",  toAny $ clientID cfg),
@@ -94,7 +95,7 @@ oa2success _ = False
 -- | Loads GAPI and insert relevant headers in the DOM
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 withGAPI cfg handler = do
-  loadGAPI' "GAPILoader" cfg handler
+  loadGAPI cfg handler
   loadGAPIExternals "GAPILoader"
 
 -- | Exports and coordinate loading of the Google API.
@@ -111,10 +112,10 @@ getToken :: IO OAuth2Token
 getToken = ffi "(function() {return gapi.auth.getToken();})"
   
 -- FFI Functions and other backendy stuff ------------------------------------
--- | Loads a library and then issues a callback
-loadLibCallback :: String -> String -> IO () -> IO ()
-loadLibCallback = ffi "(function(libraryName, version, callback) { \
-\gapi.client.load(libraryName, version, callback); })"
+-- -- | Loads a library and then issues a callback
+-- loadLibCallback :: String -> String -> IO () -> IO ()
+-- loadLibCallback = ffi "(function(libraryName, version, callback) { \
+-- \gapi.client.load(libraryName, version, callback); })"
 
 -- -- | Loads a library and then applies the promise 
 -- loadLibPromise :: String -> String -> Promise -> IO ()

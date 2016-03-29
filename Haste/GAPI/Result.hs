@@ -12,6 +12,9 @@ import Haste
 import qualified Haste.Foreign as F 
 import qualified Haste.JSString as J
 
+-- GHC 7.8 compatibility
+import Data.Functor ((<$>))
+
 import Haste.GAPI.Request.Types
 import Haste.GAPI.Request.RequestM
 
