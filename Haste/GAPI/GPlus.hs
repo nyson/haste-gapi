@@ -1,12 +1,37 @@
-module Haste.GAPI.GPlus where
+{-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Haste.GAPI.GPlus
+Description : Google+ API bindings for haste-gapi 
+Copyright   : (c) Jonathan Skårstedt, 2016
+License     : MIT
+Maintainer  : jonathan.skarstedt@gmail.com
+Stability   : experimental
+Portability : Haste
 
-import Haste.GAPI.Types 
+Contains default function and result mappings for the Google+ API.
+-}
+module Haste.GAPI.GPlus (
+  peopleGet,
+  peopleSearch,
+  peopleListByActivity,
+  peopleList,
+  -- | = Google+ datatypes:
+  
+  -- | == Google+ Person
+  module Haste.GAPI.GPlus.Person
+  
+                        ) where
+
+
+import Haste.GAPI.Types
 import Haste.GAPI.GPlus.Person
 import Haste.GAPI.Request
+import Haste.JSString as J 
+import Haste (JSString)
 
 -- | Fetches a user by ID
 peopleGet :: UserID -> RequestM (Result Person)
-peopleGet = undefined
+peopleGet uid = request' $ "plus/v1/people/" `append` uid
 
 -- | Search after users given a query string
 --
@@ -20,9 +45,15 @@ peopleGet = undefined
 --                 default is 25.
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-peopleSearch :: String -> Params -> RequestM [Result Person]
-peopleSearch = undefined
-
+peopleSearch :: JSString -> Params -> RequestM [Result Person]
+peopleSearch query ps = do
+  r <- request "plus/v1/people" $ ("query", query) `pcons` ps
+  r' <- get r "items"
+  childs <- children r'
+  case childs of
+    Just childs' -> return childs'
+    Nothing -> fail "peopleSearch: Child was not found!"
+  
 -- | List users by activity
 --
 -- Valid collections are "@plusoners@" and "@resharers@".
@@ -36,7 +67,15 @@ peopleSearch = undefined
 --   [@pageToken@] Token used for pagination in large result sets. 
 peopleListByActivity :: ActivityID -> Collection -> Params
                         -> RequestM [Result Person]
-peopleListByActivity = undefined
+peopleListByActivity actId col ps = do
+  r <- request (J.concat ["plus/v1/activities/", actId, "/people/", col]) ps
+  r' <- get r "items"
+  childs <- children r'
+  case childs of
+    Just childs' -> return childs'
+    Nothing -> fail "peopleSearch: Child was not found!"
+
+
 
 -- | List people in a specific collection
 --
@@ -61,28 +100,15 @@ peopleListByActivity = undefined
 --               "@alphabetical@" and "@best@"
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-
-{- 
-Optional query parameters:
-maxResults	unsigned integer
-The maximum number of people to include in the response, which is used
-for paging. For any response, the actual number returned might be less
-than the specified maxResults. Acceptable values are 1 to 100, inclusive.
-(Default: 100)
-
-orderBy	string	The order to return people in. 
-Acceptable values are:
-"alphabetical": Order the people by their display name.
-"best": Order people based on the relevence to the viewer.
-
-pageToken	string	The continuation token, which is used to page
-through large result sets. To get the next page of results, set this
-parameter to the value of "nextPageToken" from the previous response.
-
-
--}
-peopleList :: Collection -> Params -> RequestM [Result Person]
-peopleList = undefined
+peopleList :: UserID -> Collection -> Params -> RequestM [Result Person]
+peopleList uid c ps = do
+  r  <- request (J.concat ["plus/v1/people/", uid, "/people/", c]) ps
+  r' <- get r "items"
+  childs <- children r'
+  case childs of
+    Just childs' -> return childs'
+    Nothing -> fail "peopleSearch: Child was not found!"
+  
 
 
 

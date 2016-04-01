@@ -17,7 +17,7 @@ import Data.Functor ((<$>))
 -- | Greet checks you up on Google Plus, and prints your name and picture
 --    to the site.
 greet :: IO ()
-greet = req $ do
+greet = runR $ do
   -- Here we do a request with default parameters (def) to
   --  the version 1 api of the Google Plus API (urls can be found at
   --  Googles developer resources.) 
@@ -44,7 +44,7 @@ main = withGAPI Auth.config -- our Auth config; see an example below
 -- | This is an example of the config used to setup the Google API access
 config = Config {
   -- | Your client id
-  clientID = "",
+  clientID = "", 
   -- | Your API keys (if any)
   apiKey = "",
   -- | Your scopes. We want to access a name and a profile picture, so

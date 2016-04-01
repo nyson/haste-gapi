@@ -1,13 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-|
+Module      : Haste.GAPI.Request.Types
+Description : Types used in requests. 
+Copyright   : (c) Jonathan Skårstedt, 2016
+License     : MIT
+Maintainer  : jonathan.skarstedt@gmail.com
+Stability   : experimental
+Portability : Haste
+
+Contains default types and functions to work on them. 
+-}
+
 
 module Haste.GAPI.Request.Types where
-
-{- TODO:
-* Better types?
-* Rework request structure?
-* Hiding rawRequest and accessing it by other functions instead?
-
--}
 
 -- GHC 7.8 compatibility
 import Data.Functor ((<$>))
@@ -16,10 +21,8 @@ import Haste
 import Haste.Foreign
 import Data.Default
 import qualified Haste.JSString as J
--- import Control.Applicative
 
--- import qualified Haste.JSString as JS
-
+-- | Returns an Anys children as a Key-value array
 getKV :: JSAny -> IO [(JSString, JSString)]
 getKV = ffi "(function(obj) {\
 \var out = [];\
@@ -33,28 +36,40 @@ type Path = JSString
 -- | Parameters for a GAPI request
 data Params = Params [(JSString, JSString)]
             deriving Show
-                     
+
+-- | Params can be constructed from a JSAny                     
 instance FromAny Params where
   fromAny a = Params <$> getKV a
-    
+
+-- | Params can be converted to a JSAny              
 instance ToAny Params where
   toAny (Params ps) = let objField (k,v) = (k, toAny $ v)
                       in toObject $ map objField ps 
 
+-- | Empty Parameters as a default instance
 instance Default Params where
   def = Params []
 
--- | Merge two Params
+-- | Merge two parameters
 merge :: Params -> Params -> Params
 merge (Params xs) (Params ys) = Params $ xs ++ ys 
+
+-- | Cons a param with a base value
+pcons :: (JSString, JSString) -> Params -> Params
+pcons x (Params xs) = Params $ x:xs
+
+-- | Create a set of parameters
+params :: [(JSString, JSString)] -> Params
+params = Params
 
 -- | Request with parameters and everything
 data Request = Request { path    :: Path,
                          method  :: JSString,
-                         params  :: Params,
+                         rparams :: Params,
                          headers :: JSString,
                          body    :: JSString}
 
+-- | The requests can be shown as a debug feature
 instance Show Request where
   show (Request p m pms _hs _body)
     = let showDict :: (String, String) -> String
@@ -66,15 +81,17 @@ instance Show Request where
         ("Method", J.unpack m),
         ("Params", showParams pms)
         ]
+
+-- | A default request without any path given         
 instance Default Request where
-  def = rawRequest "" $ Params []
+  def = rawRequest "" def 
 
 
 -- | Creates a request by manually entering request path and parameters
 rawRequest :: JSString -> Params -> Request
-rawRequest p ps = Request { path = p,
-                            method = "GET",
-                            params = ps,
+rawRequest p ps = Request { path    = p,
+                            method  = "GET",
+                            rparams = ps,
                             headers = "",
-                            body = "" }
+                            body    = "" }
 

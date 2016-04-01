@@ -1,14 +1,22 @@
 {-# LANGUAGE OverloadedStrings #-}
-{- Raw JavaScript and ffi for Requests
-TODO: Do we really need a separate file for FFI?
+{-|
+Module      : Haste.GAPI.Request.Raw
+Description : JavaScript functions needed by Request handling. 
+Copyright   : (c) Jonathan Skårstedt, 2016
+License     : MIT
+Maintainer  : jonathan.skarstedt@gmail.com
+Stability   : experimental
+Portability : Haste
+
+Contains JavaScript foreign functions for use with the request handler.
 -}
+
 module Haste.GAPI.Request.Raw where
 
 import Haste
 import Haste.Foreign
 import Haste.GAPI.Internals.Promise
 
--- JavaScript exports --------------------------------------------------------
 -- | Creates a request object 
 jsCreateRequest :: JSString -> JSAny -> IO JSAny
 jsCreateRequest = ffi "(function(p, ps) {\
