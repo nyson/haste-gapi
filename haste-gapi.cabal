@@ -17,8 +17,8 @@ description:         This is a library to make use of the Google API Client
                      in JavaScript, while giving you a better ability to
                      handle errors.
                      
-                     Your HTML doesn't even need to load the GAPI library itself, Haste-GAPI
-                     handles that for you!
+                     Your HTML doesn't even need to load the GAPI library
+                     itself, Haste-GAPI handles that for you!
 
 license:             MIT
 license-file:        LICENSE
@@ -40,6 +40,7 @@ library
   exposed-modules:     Haste.GAPI,
                        Haste.GAPI.GPlus,
                        Haste.GAPI.Types
+                       
   -- Modules included in this library but not exported.
   other-modules:       Haste.GAPI.Result,
                        Haste.GAPI.Request, 
@@ -47,15 +48,12 @@ library
                        Haste.GAPI.Request.Types,
                        Haste.GAPI.Request.Raw,
                        Haste.GAPI.GPlus.Person,
-
---                       Haste.GAPI.Internals,
                        Haste.GAPI.Internals.Promise
 
---  ghc-options:         -Wall                                                
   other-extensions:    OverloadedStrings
-  build-depends:       base >=4.8, data-default, transformers
+  build-depends:       base >= 4.8, data-default >= 0.5, transformers >= 0.4 
   if impl(haste)
-    build-depends:     haste-lib >=0.5.1, haste-prim
+    build-depends:     haste-lib >=0.5.1
   else
     build-depends:     haste-compiler >=0.5.1
     

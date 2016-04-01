@@ -24,6 +24,9 @@ handles that for you!
 
 Usage
 -----
+First off, set up an account at the [Google Developer Console](https://console.developers.google.com/)
+ if you haven't already done so.
+
 While Haste-GAPI doesn't necessary needs it to work, I recommend you to
 compile your Haste-GAPI applications with the `--onexec` flag, as in
 `haste --onexec CoolSite.hs`. If you don't, you may notice slightly longer
