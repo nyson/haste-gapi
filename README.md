@@ -3,8 +3,8 @@ Haste-GAPI
 
 Google API bindings for use with the [Haste compiler](http://haste-lang.org)
 
-This is a work in progress, expect heavy API changes as I try to make an
-API that's not horrible to use. I am in no way affiliated by Google.
+This is a work in progress, and there may be API changes while I try to design
+an API that's not horrible to use. I am in no way affiliated by Google.
 
 What is this?
 -----
@@ -26,8 +26,9 @@ Usage
 -----
 While Haste-GAPI doesn't necessary needs it to work, I recommend you to
 compile your Haste-GAPI applications with the `--onexec` flag, as in
-`haste --onexec CoolSite.hs`. If you don't, you may notice a slightly slower
-load time on sites with lots of resources.
+`haste --onexec CoolSite.hs`. If you don't, you may notice slightly longer
+load time on sites with lots of resources as the Google API hooks download
+first after the DOM is loaded.
 
 To load your haste-gapi, just call this function:
 ```haskell
@@ -66,9 +67,9 @@ an `OAuth2Token` in which we can see if the authorization was successful.
 ```haskell
 import Haste.GAPI
 
-main = loadGAPI cfg
-       $ \token -> if oa2success token then putStrLn "We're in!!" 
-	           else putStrLn $ "Something went wrong: " ++ oa2error token
+main = withGAPI Auth.config $ \t -> case t of
+  OA2Error {errorMsg = e} -> putStrLn $ "There was an error: " ++ e
+  OA2Success {}           -> putStrLn $ "We're in!"
 ```
 
 ### Making a request with RequestM (rexec)!
@@ -77,18 +78,16 @@ Let's use what we know and perform a request! The code below will access
 the Google+ APIs and ask who you are!
 
 ```haskell
-import Haste
-import Haste.GAPI
-import Haste.GAPI.Request
-import Haste.GAPI.GPlus
+{-# LANGUAGE OverloadedStrings #-}
 
-import Control.Monad.IO.Class
+import Haste.GAPI
 import Data.Default
 
+-- | A login example with haste-gapi (config is defined elsewhere)
 main = withGAPI Auth.config $ \t -> case t of
-  OA2Error {errorMsg = e} -> putStrLn $ "Error lol " ++ e
-  OA2Success {}           -> rexec $ do
+  OA2Error {errorMsg = e} -> putStrLn $ "There was an error: " ++ e
+  OA2Success {}           -> runR $ do
     response <- request "plus/v1/people/me" def
-    person <- fromResult response
-    liftIO $ putStrLn $ "Hello " ++ (show . name) person ++ "!"
+    Just name <- lookupVal response "result.displayName"
+    liftIO $ putStrLn $ "Hello " ++ name ++ "!"
 ```
