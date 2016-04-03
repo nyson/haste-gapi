@@ -5,7 +5,7 @@ name:                haste-gapi
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.0.1
+version:             0.1.0.2
 synopsis:            Google API bindings for the Haste compiler
 -- A longer description of the package.
 description:         This is a library to make use of the Google API Client
@@ -41,11 +41,11 @@ flag haste-inst
 library
   -- Modules exported by the library.
   exposed-modules:     Haste.GAPI,
-                       Haste.GAPI.GPlus,
-                       Haste.GAPI.Types
-                       
+                       Haste.GAPI.GPlus
+
   -- Modules included in this library but not exported.
-  other-modules:       Haste.GAPI.Result,
+  other-modules:       Haste.GAPI.Types, 
+                       Haste.GAPI.Result,
                        Haste.GAPI.Request, 
                        Haste.GAPI.Request.RequestM,
                        Haste.GAPI.Request.Types,

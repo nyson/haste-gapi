@@ -64,7 +64,8 @@ runRConc = void . unR
 request :: Path -> Params -> RequestM (Result a)
 request p ps = customRequest (rawRequest p ps)
 
--- | Performs a request from an API path but without parameters
+-- | Performs a request from an API path but without any parameters.
+--    
 request' :: Path -> RequestM (Result a)
 request' p = customRequest (rawRequest p def)
 
