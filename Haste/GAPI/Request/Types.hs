@@ -62,16 +62,24 @@ pcons x (Params xs) = Params $ x:xs
 params :: [(JSString, JSString)] -> Params
 params = Params
 
--- | Request with parameters and everything
-data Request = Request { path    :: Path,
-                         method  :: JSString,
-                         rparams :: Params,
-                         headers :: JSString,
-                         body    :: JSString}
+-- | Data structure of a request. Used by @customRequest@ for creating custom
+--    requests. If you're just looking for an easy to use request interface,
+--    please use @request@ or @request'@ instead.
+data Request = Request {
+  -- | Path of the request
+  path    :: Path,
+  -- | Parameters to use. 
+  rparams :: Params,
+  -- | HTTP request method to use. (currently not used)
+  method  :: JSString,
+  -- | Additional request headers (currently not used)
+  headers :: JSString,
+  -- | HTTP request body (currently not used)
+  body    :: JSString}
 
 -- | The requests can be shown as a debug feature
 instance Show Request where
-  show (Request p m pms _hs _body)
+  show (Request p pms m _hs _body)
     = let showDict :: (String, String) -> String
           showDict (a,b) = "\n\t" ++ a ++  ": " ++ b
           showParams (Params p')
