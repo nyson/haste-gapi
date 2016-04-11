@@ -1,6 +1,8 @@
 Haste-GAPI
 ==========
 
+![Build Status](https://travis-ci.org/nyson/haste-gapi.svg?branch=master)
+
 Google API bindings for use with the [Haste compiler](http://haste-lang.org)
 
 This is a work in progress, and there may be API changes while I try to design
@@ -8,9 +10,8 @@ an API that's not horrible to use. I am in no way affiliated by Google.
 
 What is this?
 -----
-This is a library to make use of the [Google API Client Library for JavasScript]
-(https://developers.google.com/api-client-library/javascript/) in a Haskell
-environment!
+This is a library to make use of the [Google API Client Library for JavasScript](https://developers.google.com/api-client-library/javascript/) 
+in a Haskell environment!
 
 The library works by wrapping login and giving you a fancy type
 to perform your requests in. This will ease chained requests that would
@@ -24,7 +25,8 @@ handles that for you!
 
 Usage
 -----
-First off, set up an account at the [Google Developer Console](https://console.developers.google.com/)
+First off, set up an account at the
+ [Google Developer Console](https://console.developers.google.com/)
  if you haven't already done so.
 
 While Haste-GAPI doesn't necessary needs it to work, I recommend you to
@@ -37,23 +39,14 @@ To load your haste-gapi, just call this function:
 ```haskell
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 ```
-
 This will load the Google API JavaScript library, and perform the given
-function with a `OAuth2Token` as an argument. The type definition is below,
-and it's used to determine the success of your authentication.
-
-```haskell
-data OAuth2Token = OA2Success { accessToken :: String,
-                                expiresIn   :: String,
-                                state       :: String}
-                 | OA2Error { errorMsg :: String,
-                              state    :: String}
-```
+function with a `OAuth2Token` as an argument. The token is needed to perform
+requests within the Google API.
 
 If you want to login, you'll also have to have some login credentials,
 which you ought to find at your [Google Developer Console permissions page](https://console.developers.google.com/permissions/).
 
-This configuration takes a single API key (may be subject to change) along
+This configuration takes a single API key along
 with your clientID and scopes.
 
 ```haskell
@@ -70,9 +63,13 @@ an `OAuth2Token` in which we can see if the authorization was successful.
 ```haskell
 import Haste.GAPI
 
-main = withGAPI Auth.config $ \t -> case t of
-  OA2Error {errorMsg = e} -> putStrLn $ "There was an error: " ++ e
-  OA2Success {}           -> putStrLn $ "We're in!"
+-- | Retrieving a token (config is defined elsewhere)
+main = withGAPI Auth.config $ \token -> 
+	if oa2Success token 
+  		then do 
+          	error <- errorMsg token 
+          	putStrLn $ "There was an error: " ++ error
+  		else putStrLn $ "We're in!"
 ```
 
 ### Making a request with RequestM (rexec)!
@@ -87,10 +84,8 @@ import Haste.GAPI
 import Data.Default
 
 -- | A login example with haste-gapi (config is defined elsewhere)
-main = withGAPI Auth.config $ \t -> case t of
-  OA2Error {errorMsg = e} -> putStrLn $ "There was an error: " ++ e
-  OA2Success {}           -> runR $ do
+main = withGAPI Auth.config $ \token -> runR token $ do
     response <- request "plus/v1/people/me" def
     Just name <- lookupVal response "result.displayName"
-    liftIO $ putStrLn $ "Hello " ++ name ++ "!"
+    liftIO . putStrLn $ "Hello " ++ name ++ "!"
 ```
