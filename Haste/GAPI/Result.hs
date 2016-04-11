@@ -129,4 +129,5 @@ children (Result res) = do
     then do 
       childs <- liftIO $ children' res
       return . Just $ map Result childs
-    else return Nothing
+    else
+      return Nothing

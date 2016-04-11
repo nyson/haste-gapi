@@ -15,7 +15,7 @@ elsewhere.
 @
 
 main :: IO ()
-main = withGAPI config $ \token -> case token of
+main = withGAPI config $ \\token -> case token of
   OA2Success {} ->
     putStrLn $ show token
 
@@ -42,12 +42,8 @@ Example of a request:
 greet :: IO ()
 greet = runR $ do
   response <- request "plus\/v1\/people\/me" def
-  Just [name, pic] \<- sequence <$\> mapM (lookupVal response) [
-   "result.displayName",
-   "result.image.url"]
-  liftIO . putStrLn $ "Hello " ++  name ++ "! \<br /\>"
-    ++ "You look like this: \<br \/\>\<img src='"++ pic ++ "' \/\>"
-
+  Just name -> lookupVal response "result.displayName"
+  liftIO . putStrLn $ "Hello " ++  name ++ "!"
 @
 
 The reqeuest above will greet the user by name, fetched from the Google+ API.
@@ -63,11 +59,10 @@ class) and present a pretty HTML string!
 -}
 module Haste.GAPI (
   -- | = Connecting to the Google API
-  withGAPI,
-  oa2success,
-  getToken,
   Config(..),
-  OAuth2Token(..),
+  withGAPI,
+  -- | = Handling OAuth2 Tokens
+  module Haste.GAPI.Token,
   -- | = Creating Requests
   module Haste.GAPI.Request,
   -- | = Handling Results 
@@ -77,17 +72,19 @@ module Haste.GAPI (
 
   ) where 
 
+import Haste (JSString)
 import Haste.Foreign hiding (get, has, hasAll)
 import qualified Haste.Foreign as FFI
 
 -- GHC 7.8 compatibility
 import Data.Functor ((<$>))
 
+import Haste.GAPI.Token
 import Haste.GAPI.Request 
 import Haste.GAPI.Result
 import Haste.GAPI.Types
 import Data.Default
--- import Control.Monad
+import Control.Monad.IO.Class
 import Control.Applicative
 
 -- Datatypes -----------------------------------------------------------------
@@ -117,46 +114,7 @@ instance ToAny Config where
                         ("scopes",    toAny $ scopes cfg),
                         ("immediate", toAny $ immediate cfg)]
 
--- | OAuth2Token, the authentication tokens used by the Google API.
-data OAuth2Token = OA2Success {
-  -- | Authenticated access token 
-  accessToken :: String,
-  -- | Expiration of the token 
-  expiresIn   :: String,
-  -- | Google API Scopes related to this token.
-  state       :: String
-  }
-                 | OA2Error {
-                     errorMsg :: String,
-                     state    :: String
-                     }
 
-instance Show OAuth2Token where
-  show t = if oa2success t
-           then "Success Token: '" ++ shorten (accessToken t)
-                ++ "'\n\t for scopes: '" ++ state t
-                ++ "'\n\t expires in: "++ expiresIn t ++ "s"
-           else "Failure Token: " ++ errorMsg t
-    where shorten :: String -> String
-          shorten str | length str < 16 = str
-                      | otherwise       = take 32 str ++ "..."
-
-
-instance FromAny OAuth2Token where
-  fromAny oa2 = do
-    success <- FFI.has oa2 "access_token"
-    if success
-      then OA2Success <$> FFI.get oa2 "access_token"
-           <*> FFI.get oa2 "expires_in"
-           <*> FFI.get oa2 "state"
-      else OA2Error <$> FFI.get oa2 "error"
-           <*> FFI.get oa2 "state"
- 
--- Exported functions --------------------------------------------------------
--- | Returns true if the token represents a successful authentication
-oa2success :: OAuth2Token -> Bool
-oa2success OA2Success {} = True
-oa2success _ = False
 
 -- | Loads the Google API, inserts Google API headers and then executes
 --    an action. 
@@ -173,10 +131,6 @@ loadGAPI = loadGAPI' "GAPILoader"
 loadGAPI' :: String -> Config -> (OAuth2Token -> IO ()) -> IO ()
 loadGAPI' symbol cfg handler
   = exportLoaderSymbol symbol $ loadClient cfg $ auth cfg handler
-
--- | Returns the token from the current Google API state
-getToken :: IO OAuth2Token
-getToken = ffi "(function() {return gapi.auth.getToken();})"
 
 -- | Loads the GAPI Client 
 loadClient :: Config -> IO () -> IO ()

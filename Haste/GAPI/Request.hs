@@ -34,6 +34,7 @@ module Haste.GAPI.Request (
   parp, merge, pcons, params
   ) where
 
+import Haste.GAPI.Token
 import Haste.GAPI.Internals.Promise
 import Haste.GAPI.Request.RequestM
 import Haste.GAPI.Request.Types (
@@ -53,12 +54,12 @@ import Control.Monad
 import Control.Applicative
 
 -- | Runs the request eDSL 
-runR :: RequestM () -> IO ()
-runR = concurrent . void . unR
+runR :: OAuth2Token -> RequestM () -> IO ()
+runR _token = concurrent . void . unR
 
 -- | Runs the request eDSL from a concurrent context
-runRConc :: RequestM () -> CIO ()
-runRConc = void . unR
+runRConc :: OAuth2Token -> RequestM () -> CIO ()
+runRConc _token = void . unR
 
 -- | Creates a request from an API path and a series of parameters.
 request :: Path -> Params -> RequestM (Result a)
