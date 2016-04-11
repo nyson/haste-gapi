@@ -30,7 +30,9 @@ getKV = ffi "(function(obj) {\
 \return out;\
 \})"
 
--- | Path for requests
+-- | Google API paths, usually in the form library\/version\/category\/action.
+--    For a full list, please see the
+--    <https://developers.google.com/apis-explorer/ Google API Explorer>.
 type Path = JSString
 
 -- | Parameters for a GAPI request

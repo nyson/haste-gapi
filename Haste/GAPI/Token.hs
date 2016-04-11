@@ -9,6 +9,9 @@ module Haste.GAPI.Token (
 
   )where
 
+-- GHC 7.8 compatibility
+import Data.Functor ((<$>))
+
 import Haste (JSString)
 import Haste.Foreign
 import Control.Monad

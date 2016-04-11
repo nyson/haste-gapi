@@ -13,14 +13,15 @@ Contains RequestM and run functions.
 -}
 module Haste.GAPI.Request (
   -- | Running the Request eDSL
-  RequestM (..),
+  RequestM,
   runR, runRConc,
-  -- | == Creating common request
+  -- | == Performing requests
   Path (..),
   request, request',
-  -- | == Creating requests with custom parameters
-  Request (..),
-  customRequest,
+  -- Will be introduced when custom requests are finished
+  -- -- | == Creating requests with custom parameters
+  -- Request (..),
+  -- customRequest,
   -- | == Using results 
   Result(..),
   has, get, hasAll, val, valOf, children,
