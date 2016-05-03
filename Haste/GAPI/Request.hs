@@ -54,20 +54,25 @@ import Data.Default
 import Control.Monad
 import Control.Applicative
 
--- | Runs the request eDSL 
+-- | Validates a token 
+validateToken :: OAuth2Token -> RequestM ()
+validateToken t = do
+  valid <- liftIO $ oa2Success t
+  unless valid $ fail "The given token is not valid!"
+  
+-- | Runs the request eDSL. Locking. 
 runR :: OAuth2Token -> RequestM () -> IO ()
-runR _token = concurrent . void . unR
+runR t r = concurrent . void . unR $ validateToken t >> r 
 
--- | Runs the request eDSL from a concurrent context
+-- | Runs the request eDSL from a concurrent context. Locking.
 runRConc :: OAuth2Token -> RequestM () -> CIO ()
-runRConc _token = void . unR
+runRConc t r = void . unR $ validateToken t >> r  
 
 -- | Creates a request from an API path and a series of parameters.
 request :: Path -> Params -> RequestM (Result a)
 request p ps = customRequest (rawRequest p ps)
 
 -- | Performs a request from an API path but without any parameters.
---    
 request' :: Path -> RequestM (Result a)
 request' p = customRequest (rawRequest p def)
 

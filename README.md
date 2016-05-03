@@ -64,12 +64,13 @@ an `OAuth2Token` in which we can see if the authorization was successful.
 import Haste.GAPI
 
 -- | Retrieving a token (config is defined elsewhere)
-main = withGAPI Auth.config $ \token -> 
-	if oa2Success token 
-  		then do 
-          	error <- errorMsg token 
+main = withGAPI Auth.config $ \token -> do
+     success <- oa2Success token 
+     if success
+        then putStrLn $ "We're in!"
+  	else do error <- errorMsg token 
           	putStrLn $ "There was an error: " ++ error
-  		else putStrLn $ "We're in!"
+  	
 ```
 
 ### Making a request with RequestM (rexec)!

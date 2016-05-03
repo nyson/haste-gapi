@@ -14,13 +14,17 @@ elsewhere.
 
 @
 
-main :: IO ()
-main = withGAPI config $ \\token -> case token of
-  OA2Success {} ->
-    putStrLn $ show token
+import Haste.GAPI
+import qualified Haste.JSString as J 
 
-  OA2Error {errorMsg = e} ->
-    putStrLn $ "Your success token is invalid (" ++ e ++ ")"
+main :: IO ()
+main = withGAPI config $ \\token -> do
+  success <- oa2Success token
+  if success
+    then putStrLn "We're in!"
+    else do
+      Just e <- errorMsg token
+      putStrLn $ "There was an error: " ++ J.unpack e 
 
 @
 

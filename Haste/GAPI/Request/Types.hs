@@ -30,10 +30,19 @@ getKV = ffi "(function(obj) {\
 \return out;\
 \})"
 
+toKV :: [(JSString, JSString)] -> IO JSAny 
+toKV = ffi "(function(a2) {\
+\var obj = {};\
+\ for(i in a2){\
+\ obj[a2[i][0]] = a2[i][1];\
+\ }\
+\})"
+
 -- | Google API paths, usually in the form library\/version\/category\/action.
 --    For a full list, please see the
 --    <https://developers.google.com/apis-explorer/ Google API Explorer>.
 type Path = JSString
+type Param = (JSString, JSString)
 
 -- | Parameters for a GAPI request
 data Params = Params [(JSString, JSString)]
