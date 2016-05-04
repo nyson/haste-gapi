@@ -45,7 +45,7 @@ greet = do
   -- Here we do a request with default parameters (def) to
   --  the version 1 api of the Google Plus API (urls can be found at
   --  Googles developer resources.) 
-  response <- request "plus/v1/people/me" def
+  response <- request "plus/v1/people/me" [("Hatten", "hojoj")]
 
   -- Here we use lookupVal to extract some fields for presentation
   Just [name, pic] <- sequence <$> mapM (lookupVal response) [

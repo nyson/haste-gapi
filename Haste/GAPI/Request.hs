@@ -31,8 +31,7 @@ module Haste.GAPI.Request (
   -- | Perform a CIO Action inside RequestM 
   liftConc, 
   -- | === Constructing parameters
-  Params(),
-  parp, merge, pcons, params
+  Param, parp
   ) where
 
 import Haste.GAPI.Token
@@ -40,8 +39,7 @@ import Haste.GAPI.Internals.Promise
 import Haste.GAPI.Request.RequestM
 import Haste.GAPI.Request.Types (
   Path,
-  Params(..), Request(..),
-  merge, pcons, params,
+  Param, Request(..),
   rawRequest)
 import Haste.GAPI.Request.Raw
 import Haste.GAPI.Result
@@ -69,7 +67,7 @@ runRConc :: OAuth2Token -> RequestM () -> CIO ()
 runRConc t r = void . unR $ validateToken t >> r  
 
 -- | Creates a request from an API path and a series of parameters.
-request :: Path -> Params -> RequestM (Result a)
+request :: Path -> [Param] -> RequestM (Result a)
 request p ps = customRequest (rawRequest p ps)
 
 -- | Performs a request from an API path but without any parameters.
@@ -81,7 +79,8 @@ customRequest :: Request -> RequestM (Result a)
 customRequest req = do
   v <- newEmptyMVar
   liftConc . fork . liftIO $ do
-    resp <- jsCreateRequest (path req) (toAny $ rparams req)
+    paramObject <- toKV $ rparams req
+    resp <- jsCreateRequest (path req) paramObject
     applyPromise resp $ Promise (concurrent . putMVar v . Right . toResult)
       (\_r -> concurrent . putMVar v . Left . J.pack $ 
              "Request error: " ++ show req)

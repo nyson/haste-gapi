@@ -45,9 +45,9 @@ peopleGet uid = request' $ "plus/v1/people/" `append` uid
 --                 default is 25.
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-peopleSearch :: JSString -> Params -> RequestM [Result Person]
+peopleSearch :: JSString -> [Param] -> RequestM [Result Person]
 peopleSearch query ps = do
-  r <- request "plus/v1/people" $ ("query", query) `pcons` ps
+  r <- request "plus/v1/people" $ ("query", query):ps
   r' <- get r "items"
   childs <- children r'
   case childs of
@@ -65,7 +65,7 @@ peopleSearch query ps = do
 --                 default is 20.
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-peopleListByActivity :: ActivityID -> Collection -> Params
+peopleListByActivity :: ActivityID -> Collection -> [Param]
                         -> RequestM [Result Person]
 peopleListByActivity actId col ps = do
   r <- request (J.concat ["plus/v1/activities/", actId, "/people/", col]) ps
@@ -100,7 +100,7 @@ peopleListByActivity actId col ps = do
 --               "@alphabetical@" and "@best@"
 --
 --   [@pageToken@] Token used for pagination in large result sets. 
-peopleList :: UserID -> Collection -> Params -> RequestM [Result Person]
+peopleList :: UserID -> Collection -> [Param] -> RequestM [Result Person]
 peopleList uid c ps = do
   r  <- request (J.concat ["plus/v1/people/", uid, "/people/", c]) ps
   r' <- get r "items"

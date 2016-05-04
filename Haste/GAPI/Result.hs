@@ -100,13 +100,13 @@ valMaybe (Result res) key = liftIO $ do
     else return Nothing
 
 -- | Takes a result and a list of keys and maps these values to Params.
-parp :: Result a -> [JSString] -> RequestM (Maybe Params)
+parp :: Result a -> [JSString] -> RequestM (Maybe [Param])
 parp r keys = do
   exists <- hasAll r keys
   if not exists
     then return Nothing
     else do vals <- mapM (val r) keys
-            return . Just . Params $ zip keys vals
+            return . Just $ zip keys vals
 
 
 -- | Transforms a JSAny representing a list into a list of its children

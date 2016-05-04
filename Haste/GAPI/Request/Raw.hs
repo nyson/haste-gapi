@@ -8,7 +8,7 @@ Maintainer  : jonathan.skarstedt@gmail.com
 Stability   : experimental
 Portability : Haste
 
-Contains JavaScript foreign functions for use with the request handler.
+Contains JavaScript foreign functions for use within the request handler.
 -}
 
 module Haste.GAPI.Request.Raw where
@@ -32,3 +32,21 @@ jsExecuteRequestThen = ffi "(function(p, ps, callback) {\
 \});\
 \})"
 
+-- | Returns an Anys children as a Key-value array
+getKV :: JSAny -> IO [(JSString, JSString)]
+getKV = ffi "(function(obj) {\
+\var out = [];\
+\for(i in obj) { out.push([i, obj[i] ]); }\
+\return out;\
+\})"
+
+-- | Transforms an list of tuples into an object with left value as key and
+--    right as value for every element in the list
+toKV :: [(JSString, JSString)] -> IO JSAny 
+toKV = ffi "(function(a2) {\
+\console.debug(a2);\
+\var obj = {};\
+\ for(var i in a2){\
+\ obj[a2[i][0]] = a2[i][1];\
+\ }\
+\})"
