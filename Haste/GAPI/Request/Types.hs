@@ -65,6 +65,8 @@ instance Default Request where
 
 
 -- | Creates a request by manually entering request path and parameters
+--    note that if several keys exists, only the last key-value pair will
+--    be used.
 rawRequest :: JSString -> [Param] -> Request
 rawRequest p ps = Request { path    = p,
                             method  = "GET",

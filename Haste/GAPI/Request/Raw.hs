@@ -44,7 +44,6 @@ getKV = ffi "(function(obj) {\
 --    right as value for every element in the list
 toKV :: [(JSString, JSString)] -> IO JSAny 
 toKV = ffi "(function(a2) {\
-\console.debug(a2);\
 \var obj = {};\
 \ for(var i in a2){\
 \ obj[a2[i][0]] = a2[i][1];\

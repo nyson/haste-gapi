@@ -68,12 +68,12 @@ peopleSearch query ps = do
 peopleListByActivity :: ActivityID -> Collection -> [Param]
                         -> RequestM [Result Person]
 peopleListByActivity actId col ps = do
-  r <- request (J.concat ["plus/v1/activities/", actId, "/people/", col]) ps
+  r  <- request (J.concat ["plus/v1/activities/", actId, "/people/", col]) ps
   r' <- get r "items"
   childs <- children r'
   case childs of
     Just childs' -> return childs'
-    Nothing -> fail "peopleSearch: Child was not found!"
+    Nothing      -> fail "peopleSearch: Child was not found!"
 
 
 

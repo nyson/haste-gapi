@@ -24,8 +24,9 @@ module Haste.GAPI.Request (
   -- customRequest,
   -- | == Using results 
   Result(..),
-  has, get, hasAll, val, valOf, children,
-  lookupResult, lookupVal,
+  has, get, hasAll, val, --valOf,
+  children,
+  find, findVal,
   -- | Perform an IO Action inside RequestM 
   liftIO,
   -- | Perform a CIO Action inside RequestM 
@@ -66,7 +67,8 @@ runR t r = concurrent . void . unR $ validateToken t >> r
 runRConc :: OAuth2Token -> RequestM () -> CIO ()
 runRConc t r = void . unR $ validateToken t >> r  
 
--- | Creates a request from an API path and a series of parameters.
+-- | Creates a request from an API path and a series of parameters. If there's
+--    a duplicate in the parameters, only the last value of a key will be used.
 request :: Path -> [Param] -> RequestM (Result a)
 request p ps = customRequest (rawRequest p ps)
 
