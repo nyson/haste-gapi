@@ -1,20 +1,21 @@
 language: haskell
+
 sudo: false
 
 ghc:
-  - '7.8'
+- '7.8'
 
 before_install:
-  - cabal install haste-compiler-0.5.4
-  - haste-boot
-  
-install: 
-  - haste-cabal install --only-dependencies
+- cabal install haste-compiler-0.5.4
+- haste-boot
+
+install:
+- haste-cabal install --only-dependencies
 
 script:
-  - haste-cabal install
-  
- notifications:
+- haste-cabal install
+
+notifications:
   slack:
     rooms:
-      - ninjagroup:OFxVT5zmwZCGMrMtbDg1Uh8p#byggen
+      secure: Lv3Cd5Mgzhgbds1vmxpE1VrMOzeaOu1/GQOynOJbiHt5tYZqiIDzW+d/8lRCguTmbSK8w97Rh0HATCW63nUe74u0kxFu+KXlXUl/Y1V/yUbrU/pJRr8W3BFjubdJ1fu9HSD4g2IDDNFCT0Bo9uL881OcoPOk3dFcedFOL4BZkLscskC1d6J+2IzFmXMjBhGwpRc6hNJbRXlq8LScU+Jlk6+yXVYkjnf6lOwetzBFn3Y08vMit28IQ77FUdWV0MbhoJsYJPBspz7crMFzVdskVDbUmgPd77bJ22veZf4r3jXr3Bx2Z5Jj23OPjHNwCMiIv5elX0ZSK/4Yg54FxNqw9jTkjO053g4cAMghYSF1Ov/YlsJr7smBDcu3HZZAM8UrW0KYLGA80r6dTf337g6OfSi2ClBQMjuZ1MU1Ht5uOWmVgDrI2ukvR12ln0sjSPEZMm5jeN/OyofEOHqn7UBMqcTIG4UIv1+bhn1ntZxb7dwVqSepjCSaADhuj+NEVg6CAHYOg1ho6r9jb2KfZIl0EBr7e7PfJ3ajnkjBmIMh4nKVZieW0IIV1DUg2oNAI2NDurkrn76wFTnaWb8aPDvZxLfWZDWl5PUl1XJcn5TSsES0ZnXhyaYuFPVSvFvc0ZbgZan0NSMqLXYVkS//QapBXjMRlDWb50c2YDjxona1wNU=
