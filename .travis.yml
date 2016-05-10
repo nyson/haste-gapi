@@ -13,3 +13,8 @@ install:
 
 script:
   - haste-cabal install
+  
+ notifications:
+  slack:
+    rooms:
+      - ninjagroup:OFxVT5zmwZCGMrMtbDg1Uh8p#byggen
