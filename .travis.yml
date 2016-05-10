@@ -14,7 +14,8 @@ install:
 script:
   - haste-cabal install
   
- notifications:
+notifications:
   slack:
     rooms:
-      - ninjagroup:OFxVT5zmwZCGMrMtbDg1Uh8p#byggen
+      - ninjagroup:OFxVT5zmwZCGMrMtbDg1Uh8p#general
+      - ninjagroup:OFxVT5zmwZCGMrMtbDg1Uh8p#random
