@@ -18,7 +18,7 @@ module Haste.GAPI.Result (
   Raw(..),
   has, hasAll,
   get, getVal,
-  find, findVal,
+  find, findVal, findVals,
   children, childrenVal,
   val,
   parp,
@@ -87,6 +87,9 @@ findVal res keys = do
     Just v' -> Just <$> val v'
     Nothing -> return Nothing
 
+-- | Find all values in a result and returns
+findVals :: F.FromAny any => Result a -> [JSString] -> RequestM (Maybe [any])
+findVals r keys = sequence <$> mapM (findVal r) keys
 
 -- | Checks if a fromAny is an array
 isArray :: JSAny -> IO Bool
