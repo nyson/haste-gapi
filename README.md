@@ -5,12 +5,13 @@ Haste-GAPI
 
 Google API bindings for use with the [Haste compiler](http://haste-lang.org)
 
-This is a work in progress, and there may be API changes while I try to design
+This is very much a work in progress, and there may be API changes while I try to design
 an API that's not horrible to use. I am in no way affiliated by Google.
 
 What is this?
 -----
-This is a library to make use of the [Google API Client Library for JavasScript](https://developers.google.com/api-client-library/javascript/) 
+This is a library to make use of the 
+[Google API Client Library for JavasScript](https://developers.google.com/api-client-library/javascript/) 
 in a Haskell environment!
 
 The library works by wrapping login and giving you a fancy type
@@ -26,8 +27,8 @@ handles that for you!
 Usage
 -----
 First off, set up an account at the
- [Google Developer Console](https://console.developers.google.com/)
- if you haven't already done so.
+[Google Developer Console](https://console.developers.google.com/)
+if you haven't already done so.
 
 While Haste-GAPI doesn't necessary needs it to work, I recommend you to
 compile your Haste-GAPI applications with the `--onexec` flag, as in
@@ -44,7 +45,8 @@ function with a `OAuth2Token` as an argument. The token is needed to perform
 requests within the Google API.
 
 If you want to login, you'll also have to have some login credentials,
-which you ought to find at your [Google Developer Console permissions page](https://console.developers.google.com/permissions/).
+which you ought to find at your 
+[Google Developer Console permissions page](https://console.developers.google.com/permissions/).
 
 This configuration takes a single API key along
 with your clientID and scopes.
@@ -65,11 +67,12 @@ import Haste.GAPI
 
 -- | Retrieving a token (config is defined elsewhere)
 main = withGAPI Auth.config $ \token -> do
-     success <- oa2Success token 
-     if success
-        then putStrLn $ "We're in!"
-  	else do error <- errorMsg token 
-          	putStrLn $ "There was an error: " ++ error
+  success <- oa2Success token 
+  if success
+    then putStrLn $ "We're in!"
+   	else do 
+      error <- errorMsg token 
+      putStrLn $ "There was an error: " ++ error
   	
 ```
 
@@ -84,9 +87,14 @@ the Google+ APIs and ask who you are!
 import Haste.GAPI
 import Data.Default
 
+config = ... -- defined elsewhere
+
 -- | A login example with haste-gapi (config is defined elsewhere)
-main = withGAPI Auth.config $ \token -> runR token $ do
-    response <- request "plus/v1/people/me" def
-    Just name <- lookupVal response "result.displayName"
-    liftIO . putStrLn $ "Hello " ++ name ++ "!"
+main = withGAPI config $ \token -> runR token you
+
+you :: RequestM ()
+you = do
+  response <- request' "plus/v1/people/me"
+  Just name <- findVal response "result.displayName"
+  liftIO . putStrLn $ "Hello " ++ name ++ "!"
 ```
