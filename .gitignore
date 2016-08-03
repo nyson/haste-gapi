@@ -1,0 +1,7 @@
+Auth.hs
+*.hi
+*.jsmod
+*.js
+*.o
+/TAGS
+dist/
