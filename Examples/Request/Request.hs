@@ -27,7 +27,7 @@ config = Config {
   immediate = False}
 
 
--- | Sets up Google API access and handle authentication 
+-- | Sets up Google API access and handle authentication
 main = withGAPI Auth.config $ \token -> do
   success <- oa2Success token
   if success
@@ -61,7 +61,7 @@ greet = do
 
 
 -- | Put looks for an <ul> with id=output, and creates one if none is found.
---    It then puts a new <li> element with the given string inside it. 
+--    It then puts a new <li> element with the given string inside it.
 put :: JSString -> IO ()
 put s = do
   item <- newElem "li" `with` ["innerHTML" =: s]
