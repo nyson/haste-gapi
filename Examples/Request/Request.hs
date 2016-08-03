@@ -16,7 +16,7 @@ import Data.Functor ((<$>))
 -- | This is an example of the config used to setup the Google API access
 config = Config {
   -- | Your client id
-  clientID = "", 
+  clientID = "",
   -- | Your API keys (if any)
   apiKey = "",
   -- | Your scopes. We want to access a name and a profile picture, so
@@ -27,14 +27,12 @@ config = Config {
   immediate = False}
 
 
-
-
 -- | Sets up Google API access and handle authentication 
 main = withGAPI Auth.config $ \token -> do
   success <- oa2Success token
-  if success 
+  if success
     then runR token greet
-    else do Just e <- errorMsg token 
+    else do Just e <- errorMsg token
             put $ "Something went wrong: " `J.append` e
 
 
@@ -44,11 +42,15 @@ greet :: RequestM ()
 greet = do
   -- Here we do a request with default parameters (def) to
   --  the version 1 api of the Google Plus API (urls can be found at
-  --  Googles developer resources.) 
-  response <- request "plus/v1/people/me" [("Hatten", "hojoj")]
+  --  Googles developer resources.)
 
-  -- Here we use lookupVal to extract some fields for presentation
-  Just [name, pic] <- sequence <$> mapM (lookupVal response) [
+  -- `request' <path>` is making a request to a certain <path> without any
+  --  parameters. If you want to make a request with parameters, use
+  --  `request <path> [(<param key>, <param value>)]` instead.
+  response <- request' "plus/v1/people/me"
+
+  -- Here we use lookupVals to extract some fields for presentation.
+  Just [name, pic] <- findVals response [
     "result.displayName",
     "result.image.url"]
 
@@ -62,7 +64,7 @@ greet = do
 --    It then puts a new <li> element with the given string inside it. 
 put :: JSString -> IO ()
 put s = do
-  item <- newElem "li" `with` ["innerHTML" =: s]  
+  item <- newElem "li" `with` ["innerHTML" =: s]
   elem <- elemById "output"
   case elem of
     Just output -> output `appendChild` item
