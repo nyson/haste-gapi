@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-|
 Module      : Haste.GAPI.GPlus
-Description : Google+ API bindings for haste-gapi 
+Description : Google+ API bindings for haste-gapi
 Copyright   : (c) Jonathan Skårstedt, 2016
 License     : MIT
 Maintainer  : jonathan.skarstedt@gmail.com
@@ -16,17 +16,15 @@ module Haste.GAPI.GPlus (
   peopleListByActivity,
   peopleList,
   -- | = Google+ datatypes:
-  
   -- | == Google+ Person
   module Haste.GAPI.GPlus.Person
-  
-                        ) where
+  ) where
 
 
 import Haste.GAPI.Types
 import Haste.GAPI.GPlus.Person
 import Haste.GAPI.Request
-import Haste.JSString as J 
+import Haste.JSString as J
 import Haste (JSString)
 
 -- | Fetches a user by ID
@@ -36,15 +34,15 @@ peopleGet uid = request' $ "plus/v1/people/" `append` uid
 -- | Search after users given a query string
 --
 -- Optional parameters:
--- 
+--
 --   [@language@] @language@ to search with. See Google API documentation
---                for valid language codes              
--- 
+--                for valid language codes
+--
 --   [@maxResult@] Maximum number of people to include in the response.
 --                 Acceptable values of @maxResult@ ranges between 1-50,
 --                 default is 25.
 --
---   [@pageToken@] Token used for pagination in large result sets. 
+--   [@pageToken@] Token used for pagination in large result sets.
 peopleSearch :: JSString -> [Param] -> RequestM [Result Person]
 peopleSearch query ps = do
   r <- request "plus/v1/people" $ ("query", query):ps
@@ -53,18 +51,18 @@ peopleSearch query ps = do
   case childs of
     Just childs' -> return childs'
     Nothing -> fail "peopleSearch: Child was not found!"
-  
+
 -- | List users by activity
 --
 -- Valid collections are "@plusoners@" and "@resharers@".
 --
 -- Optional parameters:
--- 
+--
 --   [@maxResult@] Maximum number of people to include in the response.
 --                 Acceptable values of @maxResult@ ranges between 1-100,
 --                 default is 20.
 --
---   [@pageToken@] Token used for pagination in large result sets. 
+--   [@pageToken@] Token used for pagination in large result sets.
 peopleListByActivity :: ActivityID -> Collection -> [Param]
                         -> RequestM [Result Person]
 peopleListByActivity actId col ps = do
@@ -74,8 +72,6 @@ peopleListByActivity actId col ps = do
   case childs of
     Just childs' -> return childs'
     Nothing      -> fail "peopleSearch: Child was not found!"
-
-
 
 -- | List people in a specific collection
 --
@@ -89,9 +85,9 @@ peopleListByActivity actId col ps = do
 --   [@visible@] The list of people who this user has added to one or more
 --               circles, limited to the circles visible to the requesting
 --               application.
--- 
+--
 -- Optional parameters:
--- 
+--
 --   [@maxResult@] Maximum number of people to include in the response.
 --                 Acceptable values of @maxResult@ ranges between 1-100,
 --                 default is 100.
@@ -108,12 +104,3 @@ peopleList uid c ps = do
   case childs of
     Just childs' -> return childs'
     Nothing -> fail "peopleSearch: Child was not found!"
-  
-
-
-
-
-
-
-
-  

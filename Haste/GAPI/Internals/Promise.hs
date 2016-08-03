@@ -8,7 +8,7 @@ Maintainer  : jonathan.skarstedt@gmail.com
 Stability   : experimental
 Portability : Haste
 
-Wraps Promises as implemented in Google API with a haskell representation. 
+Wraps Promises as implemented in Google API with a haskell representation.
 -}
 module Haste.GAPI.Internals.Promise where
 
@@ -17,7 +17,7 @@ import Haste.Foreign
 
 -- | An argument to a fulfilled promise
 type Response = JSAny
--- | An argument to a rejected promise 
+-- | An argument to a rejected promise
 type Reason = JSAny
 
 -- | A promise is either a true promise or a callback
@@ -32,7 +32,7 @@ instance ToAny Promise where
   toAny (Callback cbk) = toObject [("then", toAny cbk),
                                    ("error", toAny gapiError)]
 
--- | Apply a promise to a JSAny 
+-- | Apply a promise to a JSAny
 applyPromise :: JSAny -> Promise -> IO ()
 applyPromise = ffi "(function(action, p) {action.then(p.then, p.error);})"
 

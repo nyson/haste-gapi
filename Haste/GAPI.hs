@@ -15,7 +15,7 @@ elsewhere.
 @
 
 import Haste.GAPI
-import qualified Haste.JSString as J 
+import qualified Haste.JSString as J
 
 main :: IO ()
 main = withGAPI config $ \\token -> do
@@ -24,7 +24,7 @@ main = withGAPI config $ \\token -> do
     then putStrLn "We're in!"
     else do
       Just e <- errorMsg token
-      putStrLn $ "There was an error: " ++ J.unpack e 
+      putStrLn $ "There was an error: " ++ J.unpack e
 
 @
 
@@ -69,12 +69,12 @@ module Haste.GAPI (
   module Haste.GAPI.Token,
   -- | = Creating Requests
   module Haste.GAPI.Request,
-  -- | = Handling Results 
+  -- | = Handling Results
   module Haste.GAPI.Result,
   -- | = Common types when working with Google API libraries
   module Haste.GAPI.Types
 
-  ) where 
+  ) where
 
 import Haste (JSString)
 import Haste.Foreign hiding (get, has, hasAll)
@@ -97,17 +97,17 @@ import Control.Applicative
 --    does, please see the <https://developers.google.com/api-client-library/javascript/reference/referencedocs Google API Reference>,
 --    especially the methods @gapi.auth.authorize@ and @gapi.client.setApiKey@.
 data Config = Config {
-  -- | Client ID to generate an authentification token from. 
+  -- | Client ID to generate an authentification token from.
   clientID  :: String,
   -- | The API key for your application
   apiKey    :: String,
   -- | Here you enter the availiable scopes for your application.
   scopes    :: String,
   -- | If true, the token an attempt will be made to refresh it behind the
-  --    cenes
-  immediate :: Bool    
+  --    scenes
+  immediate :: Bool
   }
-              
+
 instance Show Config where
   show (Config cid key scopes' imm)
     = "\nConfig: " ++ concatMap (++ "\n\t") [cid, key, scopes', show imm]
@@ -118,10 +118,8 @@ instance ToAny Config where
                         ("scopes",    toAny $ scopes cfg),
                         ("immediate", toAny $ immediate cfg)]
 
-
-
 -- | Loads the Google API, inserts Google API headers and then executes
---    an action. 
+--    an action.
 withGAPI :: Config -> (OAuth2Token -> IO ()) -> IO ()
 withGAPI cfg handler = do
   loadGAPI cfg handler
@@ -136,7 +134,7 @@ loadGAPI' :: String -> Config -> (OAuth2Token -> IO ()) -> IO ()
 loadGAPI' symbol cfg handler
   = exportLoaderSymbol symbol $ loadClient cfg $ auth cfg handler
 
--- | Loads the GAPI Client 
+-- | Loads the GAPI Client
 loadClient :: Config -> IO () -> IO ()
 loadClient = ffi "(function(cfg, auth){\
 \gapi.client.setApiKey(cfg.apiKey); \
@@ -151,7 +149,7 @@ auth = ffi "(function(cfg, ah)\
  \'immediate': cfg.immediate}, \
 \ah);})"
 
--- | Export the loader symbol 
+-- | Exports the loader symbol
 exportLoaderSymbol :: String -> IO () -> IO ()
 exportLoaderSymbol = ffi "(function(s, f) {window[s] = f;})"
 

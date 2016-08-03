@@ -7,7 +7,7 @@ Maintainer  : jonathan.skarstedt@gmail.com
 Stability   : experimental
 Portability : Haste
 
-Types for use by different APIs connecting to haste-gapi. 
+Types for use by different APIs connecting to haste-gapi.
 -}
 module Haste.GAPI.Types where
 
@@ -19,7 +19,7 @@ type ETag = JSString
 -- | An e-mail address
 type EMail = JSString
 
--- | Type of e-mail address. 
+-- | Type of e-mail address.
 type EMailType = JSString
 
 -- | An URL
@@ -38,6 +38,6 @@ type Collection = JSString
 --    website.
 type URLType = JSString
 
--- | An image wrapped URL 
+-- | An image wrapped URL
 data Image = Image URL
            deriving Show

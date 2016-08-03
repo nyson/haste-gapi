@@ -9,24 +9,24 @@ Stability   : experimental
 Portability : Haste
 
 This module contains functions to work on results from requests to the Google
-API. 
+API.
 -}
 
 
 module Haste.GAPI.Result (
   Result(),
-  Raw(..), 
+  Raw(..),
   has, hasAll,
   get, getVal,
   find, findVal,
   children, childrenVal,
-  val, -- valOf, valMaybe,
-  parp, 
-  toResult 
+  val,
+  parp,
+  toResult
   ) where
 
 import Haste
-import qualified Haste.Foreign as F 
+import qualified Haste.Foreign as F
 import qualified Haste.JSString as J
 
 -- GHC 7.8 compatibility
@@ -42,21 +42,21 @@ newtype Result a = Result {rawR :: F.JSAny}
 
 -- | Transforms a JSAny to a Result
 toResult :: JSAny -> Result a
-toResult = Result 
+toResult = Result
 
 -- | Default result parameter.
-data Raw 
+data Raw
 
 -- | Checks if a Result has a certain field
 has :: Result a -> JSString -> RequestM Bool
 has (Result res) key = liftIO $ F.has res key
 
 -- | Checks if a Result has several different fields. Will return true only
---    if all these fields exists. 
+--    if all these fields exists.
 hasAll :: Result a -> [JSString] -> RequestM Bool
 hasAll res keys = and <$> mapM (has res) keys
 
--- | Fetches a data field from a GAPI Result 
+-- | Fetches a data field from a GAPI Result
 get :: Result a -> JSString -> RequestM (Result b)
 get (Result r) key = liftIO $ do
   h <- F.has r key
@@ -65,11 +65,11 @@ get (Result r) key = liftIO $ do
 
 -- | Gets a value instead of a result container from a result
 getVal :: F.FromAny any => Result a -> JSString -> RequestM any
-getVal r key = get r key >>= val 
+getVal r key = get r key >>= val
 
 -- | Fetches a result by a deep index
 --   Example:
--- 
+--
 --   @
 --     findVal res "a.b.c"
 --   @
@@ -88,7 +88,7 @@ findVal res keys = do
     Nothing -> return Nothing
 
 
--- | Checks if a fromAny is an array 
+-- | Checks if a fromAny is an array
 isArray :: JSAny -> IO Bool
 isArray = F.ffi "(function(a) {return a.prop && a.prop.constructor === Array;})"
 
@@ -97,8 +97,8 @@ isArray = F.ffi "(function(a) {return a.prop && a.prop.constructor === Array;})"
 children :: Result a -> RequestM (Maybe [Result b])
 children (Result res) = do
   arr <- liftIO $ isArray res
-  if arr 
-    then do 
+  if arr
+    then do
       childs <- liftIO $ children' res
       return . Just $ map Result childs
     else
@@ -109,7 +109,7 @@ children (Result res) = do
     children' = F.fromAny
 
 -- | Same as children, but will retrieve workable data instead of result
---    wrappings 
+--    wrappings
 childrenVal :: F.FromAny any => Result a -> RequestM (Maybe [any])
 childrenVal r = do
   childs <- children r
@@ -135,7 +135,7 @@ val = liftIO . F.fromAny . rawR
 --  __stuffs = "I am  a fond lover of hats"__, `params` will
 --  now be a list as below, making it easy to chain parameters between
 --  requests.
--- 
+--
 --  prop> params = [("id", "uid19530"), ("stuff", "I am a fond lover of hats")]
 parp :: Result a -> [JSString] -> RequestM (Maybe [Param])
 parp r keys = do

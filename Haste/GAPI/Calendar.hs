@@ -3,7 +3,7 @@
 delete :: CalendarID -> RequestM ()
 -- | Get a calendar by id
 get :: CalendarID -> RequestM Calendar
--- | Insert 
+-- | Insert
 insert :: [CalendarList] -> CalendarID -> RequestM ()
 -- | List calendars
 list :: Params -> RequestM [Calendar]

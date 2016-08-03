@@ -7,10 +7,10 @@ Maintainer  : jonathan.skarstedt@gmail.com
 Stability   : experimental
 Portability : Haste
 
-Contains the Request Monad with all its instances 
+Contains the Request Monad with all its instances
 -}
 module Haste.GAPI.Request.RequestM (
-  Error, 
+  Error,
   RequestM(..),
   liftIO
   ) where
@@ -19,14 +19,14 @@ import Haste
 import Control.Monad
 import Data.Functor
 import Haste.Concurrent
-import Control.Monad.IO.Class 
+import Control.Monad.IO.Class
 import Control.Applicative
 import qualified Haste.JSString as J
 
--- | A default error type for RequestM, will be customisable in the future. 
+-- | A default error type for RequestM, will be customisable in the future.
 type Error = JSString
 
--- | An eDSL for requests. 
+-- | An eDSL for requests.
 newtype RequestM a = Req {unR :: CIO (Either Error a)}
 
 -- | RequestM can perform CIO actions
@@ -49,11 +49,11 @@ instance Monad RequestM where
       Left  bad  -> do
         return $ Left bad
 
--- | Applicative is defined so that it builds under GHC 7.8 
+-- | Applicative is defined so that it builds under GHC 7.8
 instance Applicative RequestM where
   (<*>) = ap
   pure = return
-  
--- | Functor is defined so that it builds under GHC 7.8 
+
+-- | Functor is defined so that it builds under GHC 7.8
 instance Functor RequestM where
   fmap f m = m >>= return . f

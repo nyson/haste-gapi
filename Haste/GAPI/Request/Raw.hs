@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-|
 Module      : Haste.GAPI.Request.Raw
-Description : JavaScript functions needed by Request handling. 
+Description : JavaScript functions needed by Request handling.
 Copyright   : (c) Jonathan Skårstedt, 2016
 License     : MIT
 Maintainer  : jonathan.skarstedt@gmail.com
@@ -17,7 +17,7 @@ import Haste
 import Haste.Foreign
 import Haste.GAPI.Internals.Promise
 
--- | Creates a request object 
+-- | Creates a request object
 jsCreateRequest :: JSString -> JSAny -> IO JSAny
 jsCreateRequest = ffi "(function(p, ps) {\
 \return gapi.client.request({'path': p, 'params': ps})\
@@ -42,7 +42,7 @@ getKV = ffi "(function(obj) {\
 
 -- | Transforms an list of tuples into an object with left value as key and
 --    right as value for every element in the list
-toKV :: [(JSString, JSString)] -> IO JSAny 
+toKV :: [(JSString, JSString)] -> IO JSAny
 toKV = ffi "(function(a2) {\
 \var obj = {};\
 \ for(var i in a2){\

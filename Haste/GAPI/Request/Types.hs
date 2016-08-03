@@ -1,14 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-|
 Module      : Haste.GAPI.Request.Types
-Description : Types used in requests. 
+Description : Types used in requests.
 Copyright   : (c) Jonathan Skårstedt, 2016
 License     : MIT
 Maintainer  : jonathan.skarstedt@gmail.com
 Stability   : experimental
 Portability : Haste
 
-Contains default types and functions to work on them. 
+Contains default types and functions to work on them.
 -}
 
 
@@ -37,7 +37,7 @@ type Param = (JSString, JSString)
 data Request = Request {
   -- | Path of the request
   path    :: Path,
-  -- | Parameters to use. 
+  -- | Parameters to use.
   rparams :: [Param],
   -- | HTTP request method to use. (currently not used)
   method  :: JSString,
@@ -59,9 +59,9 @@ instance Show Request where
     "}"]
     where showDict (a,b) = J.unpack $ J.concat ["\n\t", a, ": ", b]
 
--- | A default request without any path given         
+-- | A default request without any path given
 instance Default Request where
-  def = rawRequest "" def 
+  def = rawRequest "" def
 
 
 -- | Creates a request by manually entering request path and parameters
